@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">M.L.P.</string>
+    <string name="data_filename">mlp.data</string>
+
+    <string name="action_settings">设置</string>
+
+    <string name="alert_title">警告</string>
+    <string name="confirm">确认</string>
+    <string name="cancel">取消</string>
+
+    <string name="longitude_title">经度</string>
+    <string name="example_coordinate">000:00:00.00000</string>
+    <string name="latitude_title">纬度</string>
+
+    <string name="add_mock_target_title">添加模拟定位目标</string>
+    <string name="add_mock_target_success">成功添加模拟定位目标</string>
+
+    <string name="err_coordinate_wrong">坐标输入错误</string>
+
+    <string name="delete_mock_target_confirm_title">确认删除模拟定位目标？</string>
+    <string name="delete_mock_target_confirm_message">经度：%s\n纬度：%s</string>
+
+    <!-- Service -->
+    <string name="pref_is_service_online_key">pref_is_service_online</string>
+    <string name="service_description">M.L.P. 模拟位置服务</string>
+    <string name="service_notification_channel_description">M.L.P. 模拟位置服务通知</string>
+    <string name="service_notification_text">M.L.P. 模拟位置服务正在运行</string>
+</resources>
