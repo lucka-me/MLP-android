@@ -1,9 +1,10 @@
 package labs.lucka.mlp
 
+import android.app.ActivityManager
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
 import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.AlertDialog
@@ -54,21 +55,13 @@ class MainActivity : AppCompatActivity() {
             }
         )
 
-        fabService.setImageDrawable(
-            if (isMLPServiceOnline()) getDrawable(R.drawable.ic_cancel)
-            else getDrawable(R.drawable.ic_start)
-        )
+        updateFabService()
 
         fabService.setOnClickListener { _ ->
             if (isMLPServiceOnline()) {
                 val mlpService = Intent(this, MockLocationProviderService::class.java)
                 stopService(mlpService)
-                PreferenceManager
-                    .getDefaultSharedPreferences(this)
-                    .edit()
-                    .putBoolean(getString(R.string.pref_is_service_online_key), false)
-                    .apply()
-                fabService.setImageDrawable(getDrawable(R.drawable.ic_start))
+                updateFabService()
             } else {
                 saveData()
                 val mlpService = Intent(this, MockLocationProviderService::class.java)
@@ -77,9 +70,10 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     startService(mlpService)
                 }
-                fabService.setImageDrawable(getDrawable(R.drawable.ic_cancel))
+                updateFabService()
             }
         }
+
     }
 
     /*
@@ -168,9 +162,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateFabService() {
+        fabService.setImageDrawable(
+            if (isMLPServiceOnline()) getDrawable(R.drawable.ic_cancel)
+            else getDrawable(R.drawable.ic_start)
+        )
+    }
+
     private fun isMLPServiceOnline(): Boolean {
-        return PreferenceManager
-            .getDefaultSharedPreferences(this)
-            .getBoolean(getString(R.string.pref_is_service_online_key), false)
+        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        @Suppress("DEPRECATION")
+        for (serviceInfo in activityManager.getRunningServices(Int.MAX_VALUE)) {
+            if (serviceInfo.service.className == MockLocationProviderService::class.java.name)
+                return true
+        }
+        return false
     }
 }

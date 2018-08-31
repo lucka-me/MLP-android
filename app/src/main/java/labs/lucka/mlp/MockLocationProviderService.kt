@@ -12,9 +12,7 @@ import android.location.LocationProvider
 import android.os.Build
 import android.os.IBinder
 import android.os.SystemClock
-import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
-import android.util.Log
 import org.jetbrains.anko.runOnUiThread
 import java.io.File
 import java.io.FileInputStream
@@ -24,14 +22,17 @@ import java.util.*
 class MockLocationProviderService : Service() {
 
     private var mockTargetList: ArrayList<MockTarget> = ArrayList(0)
+    private var enabledMockTargetList: ArrayList<MockTarget> = ArrayList(0)
     private lateinit var locationManager: LocationManager
     private var timer: Timer = Timer(true)
     private var currentTargetIndex: Int = 0
+    private lateinit var notificationManager: NotificationManager
+    private var notificationId = 0
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        // Setup foreground service
-        val notificationManager =
+        // Setup notification and foreground service
+        notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel =
@@ -58,6 +59,7 @@ class MockLocationProviderService : Service() {
                 .setSmallIcon(R.drawable.ic_start)
                 .build()
         )
+        notificationId = 0
 
         // Load data
         val filename = getString(R.string.data_filename)
@@ -75,17 +77,28 @@ class MockLocationProviderService : Service() {
             objectInputStream.close()
             fileInputStream.close()
         } catch (error: Exception) {
+            pushNotification(error.message)
             stopSelf()
+        }
+        for (mockTarget in mockTargetList) {
+            if (mockTarget.enabled)
+                enabledMockTargetList.add(mockTarget)
         }
 
         // Setup location manager
-        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        locationManager.addTestProvider(LocationManager.GPS_PROVIDER, false, false,false,false,true,true, true, Criteria.POWER_LOW, Criteria.ACCURACY_FINE)
-        locationManager.addTestProvider(LocationManager.NETWORK_PROVIDER, false, false,false,false,true,true, true, Criteria.POWER_LOW, Criteria.ACCURACY_FINE)
-        locationManager.setTestProviderEnabled(LocationManager.GPS_PROVIDER, true)
-        locationManager.setTestProviderEnabled(LocationManager.NETWORK_PROVIDER, true)
-        locationManager.setTestProviderStatus(LocationManager.GPS_PROVIDER, LocationProvider.AVAILABLE, null, System.currentTimeMillis())
-        locationManager.setTestProviderStatus(LocationManager.NETWORK_PROVIDER, LocationProvider.AVAILABLE, null, System.currentTimeMillis())
+        try {
+            locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            locationManager.addTestProvider(LocationManager.GPS_PROVIDER, false, false,false,false,true,true, true, Criteria.POWER_LOW, Criteria.ACCURACY_FINE)
+            locationManager.addTestProvider(LocationManager.NETWORK_PROVIDER, false, false,false,false,true,true, true, Criteria.POWER_LOW, Criteria.ACCURACY_FINE)
+            locationManager.setTestProviderEnabled(LocationManager.GPS_PROVIDER, true)
+            locationManager.setTestProviderEnabled(LocationManager.NETWORK_PROVIDER, true)
+            locationManager.setTestProviderStatus(LocationManager.GPS_PROVIDER, LocationProvider.AVAILABLE, null, System.currentTimeMillis())
+            locationManager.setTestProviderStatus(LocationManager.NETWORK_PROVIDER, LocationProvider.AVAILABLE, null, System.currentTimeMillis())
+        } catch (error: Exception) {
+            pushNotification(error.message)
+            stopSelf()
+        }
+
 
         // Setup timer task
         currentTargetIndex = 0
@@ -93,34 +106,26 @@ class MockLocationProviderService : Service() {
         timer.schedule(object : TimerTask() {
             override fun run() {
                 runOnUiThread {
-                    for (i in currentTargetIndex until mockTargetList.size) {
-                        if (mockTargetList[i].enabled) {
-                            currentTargetIndex = i
-                            val location = mockTargetList[i].location
-                            location.provider = LocationManager.GPS_PROVIDER
-                            location.accuracy = ACCURACY
-                            location.time = Date().time
-                            location.elapsedRealtimeNanos = SystemClock.elapsedRealtimeNanos()
-                            locationManager.setTestProviderLocation(LocationManager.GPS_PROVIDER, location)
-                            location.provider = LocationManager.NETWORK_PROVIDER
-                            locationManager.setTestProviderLocation(LocationManager.NETWORK_PROVIDER, location)
-                            Log.i("TESTMLP", "传入模拟位置序号：" + currentTargetIndex)
-                            currentTargetIndex++
-                            break
-                        }
+
+                    val location = enabledMockTargetList[currentTargetIndex].location
+                    location.provider = LocationManager.GPS_PROVIDER
+                    location.accuracy = ACCURACY
+                    location.time = Date().time
+                    location.elapsedRealtimeNanos = SystemClock.elapsedRealtimeNanos()
+                    try {
+                        locationManager.setTestProviderLocation(LocationManager.GPS_PROVIDER, location)
+                        location.provider = LocationManager.NETWORK_PROVIDER
+                        locationManager.setTestProviderLocation(LocationManager.NETWORK_PROVIDER, location)
+                    } catch (error: Exception) {
+                        pushNotification(error.message)
+                        stopSelf()
                     }
-                    if (currentTargetIndex == mockTargetList.size) currentTargetIndex = 0
+                    currentTargetIndex++
+                    if (currentTargetIndex == enabledMockTargetList.size) currentTargetIndex = 0
 
                 }
             }
         }, 0, INTERVAL)
-
-        // Set the online state
-        PreferenceManager
-            .getDefaultSharedPreferences(this)
-            .edit()
-            .putBoolean(getString(R.string.pref_is_service_online_key), true)
-            .apply()
 
         return super.onStartCommand(intent, flags, startId)
     }
@@ -132,21 +137,32 @@ class MockLocationProviderService : Service() {
         timer.cancel()
         timer.purge()
 
-        locationManager.setTestProviderEnabled(LocationManager.GPS_PROVIDER, false)
-        locationManager.setTestProviderEnabled(LocationManager.NETWORK_PROVIDER, false)
-        locationManager.removeTestProvider(LocationManager.GPS_PROVIDER)
-        locationManager.removeTestProvider(LocationManager.NETWORK_PROVIDER)
+        try {
+            locationManager.setTestProviderEnabled(LocationManager.GPS_PROVIDER, false)
+            locationManager.setTestProviderEnabled(LocationManager.NETWORK_PROVIDER, false)
+            locationManager.removeTestProvider(LocationManager.GPS_PROVIDER)
+            locationManager.removeTestProvider(LocationManager.NETWORK_PROVIDER)
+        } catch (error: Exception) {
+            pushNotification(error.message)
+        }
 
-        PreferenceManager
-            .getDefaultSharedPreferences(this)
-            .edit()
-            .putBoolean(getString(R.string.pref_is_service_online_key), false)
-            .apply()
         super.onDestroy()
     }
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
+    }
+
+    private fun pushNotification(message: String?) {
+        notificationManager.notify(
+            notificationId,
+            NotificationCompat.Builder(this.applicationContext, CHANNEL_ID)
+                .setContentTitle(getString(R.string.service_caught_error_title))
+                .setContentText(message?: getString(R.string.service_caught_error_text_default))
+                .setSmallIcon(R.drawable.ic_launcher_background)
+                .build()
+        )
+        notificationId++
     }
 
     companion object {
