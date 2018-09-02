@@ -19,6 +19,47 @@ import java.io.FileInputStream
 import java.io.ObjectInputStream
 import java.util.*
 
+/**
+ * A (foreground) service to provide mock location
+ *
+ * ## Attributes
+ * ### Private
+ * - [mockTargetList]
+ * - [enabledMockTargetList]
+ * - [locationManager]
+ * - [timer]
+ * - [currentTargetIndex]
+ * - [notificationManager]
+ * - [notificationId]
+ * ### Static
+ * - [INTERVAL]
+ * - [ACCURACY]
+ * - [CHANNEL_ID]
+ * - [FOREGROUND_ID]
+ *
+ * ## Methods
+ * ### Overridden
+ * - [onStartCommand]
+ * - [onDestroy]
+ * - [onBind]
+ * ### Private
+ * - [pushNotification]
+ *
+ * @author lucka-me
+ * @since 0.1
+ *
+ * @property [mockTargetList] ArrayList for mock targets
+ * @property [enabledMockTargetList] ArrayList for enabled mock targets from [mockTargetList]
+ * @property [locationManager] Used to send mock location
+ * @property [timer] Used to provide mock location with [INTERVAL]
+ * @property [currentTargetIndex] Used to identify which target in [enabledMockTargetList] should be sent
+ * @property [notificationManager] Used to send notifications and create notification channel in O and above
+ * @property [notificationId] Used as unique id for notifications
+ * @property [INTERVAL] Interval between two mock location updates
+ * @property [ACCURACY] Accuracy set for mock locations
+ * @property [CHANNEL_ID] Used for notification channel
+ * @property [FOREGROUND_ID] Used as id of foreground service notification
+ */
 class MockLocationProviderService : Service() {
 
     private var mockTargetList: ArrayList<MockTarget> = ArrayList(0)
@@ -88,12 +129,32 @@ class MockLocationProviderService : Service() {
         // Setup location manager
         try {
             locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            locationManager.addTestProvider(LocationManager.GPS_PROVIDER, false, false,false,false,true,true, true, Criteria.POWER_LOW, Criteria.ACCURACY_FINE)
-            locationManager.addTestProvider(LocationManager.NETWORK_PROVIDER, false, false,false,false,true,true, true, Criteria.POWER_LOW, Criteria.ACCURACY_FINE)
+            locationManager.addTestProvider(
+                LocationManager.GPS_PROVIDER,
+                false, false,false,false,
+                true,true, true,
+                Criteria.POWER_LOW, Criteria.ACCURACY_FINE
+            )
+            locationManager.addTestProvider(
+                LocationManager.NETWORK_PROVIDER,
+                false, false,false,false,
+                true,true, true,
+                Criteria.POWER_LOW, Criteria.ACCURACY_FINE
+            )
             locationManager.setTestProviderEnabled(LocationManager.GPS_PROVIDER, true)
             locationManager.setTestProviderEnabled(LocationManager.NETWORK_PROVIDER, true)
-            locationManager.setTestProviderStatus(LocationManager.GPS_PROVIDER, LocationProvider.AVAILABLE, null, System.currentTimeMillis())
-            locationManager.setTestProviderStatus(LocationManager.NETWORK_PROVIDER, LocationProvider.AVAILABLE, null, System.currentTimeMillis())
+            locationManager.setTestProviderStatus(
+                LocationManager.GPS_PROVIDER,
+                LocationProvider.AVAILABLE,
+                null,
+                System.currentTimeMillis()
+            )
+            locationManager.setTestProviderStatus(
+                LocationManager.NETWORK_PROVIDER,
+                LocationProvider.AVAILABLE,
+                null,
+                System.currentTimeMillis()
+            )
         } catch (error: Exception) {
             pushNotification(error.message)
             stopSelf()
@@ -153,6 +214,14 @@ class MockLocationProviderService : Service() {
         return null
     }
 
+    /**
+     * Push a notification
+     *
+     * @param [message] The message to notify
+     *
+     * @author lucka-me
+     * @since 0.1.1
+     */
     private fun pushNotification(message: String?) {
         notificationManager.notify(
             notificationId,

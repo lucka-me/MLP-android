@@ -1,12 +1,14 @@
 <resources>
     <string name="app_name">M.L.P.</string>
     <string name="data_filename">mlp.data</string>
+    <string name="test_location_provider">mlp_test</string>
 
-    <string name="action_settings">Preference</string>
+    <string name="action_preference">Preference</string>
 
     <string name="alert_title">Alert</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
+    <string name="settings">Settings</string>
 
     <string name="longitude_title">Longitude</string>
     <string name="example_coordinate">000:00:00.00000</string>
@@ -16,9 +18,14 @@
     <string name="add_mock_target_success">Success.</string>
 
     <string name="err_coordinate_wrong">Wrong coordinate.</string>
+    <string name="err_developer_options_failed">Failed to open Developer Options.</string>
 
     <string name="delete_mock_target_confirm_title">Confirm deletion</string>
     <string name="delete_mock_target_confirm_message">Longitude: %s\nLatitude: %s</string>
+
+    <!-- Developer Options -->
+    <string name="mock_location_option_title">Developer Options</string>
+    <string name="mock_location_option_text">To provide mock location, you must turn on the Enable mock location option in the Developer Options, and select MLP in the Select mock location app option if the option exists.</string>
 
     <!-- Service -->
     <string name="pref_is_service_online_key">pref_is_service_online</string>

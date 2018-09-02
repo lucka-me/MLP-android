@@ -9,6 +9,33 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 
+/**
+ * Adapter for mainRecyclerView.
+ *
+ * ## Nested Classes
+ * - [MainRecyclerViewListener]
+ * - [OnItemClickListener]
+ * - [ViewHolderCardMockTarget]
+ *
+ * ## Methods
+ * ### Overridden
+ * - [onCreateViewHolder]
+ * - [onBindViewHolder]
+ * - [getItemCount]
+ * ### Public
+ * - [notifyAddMockTarget]
+ * - [notifyRemoveMockTarget]
+ *
+ * @param [context] The context
+ * @param [mockTargetList] ArrayList for mock targets from [MainActivity]
+ * @param [mainRecyclerViewListener] Message listener from [MainActivity]
+ *
+ * @author lucka-me
+ * @since 0.1
+ *
+ * @property [onItemClickListener] Listener for click event on cards
+ *
+ */
 class MainRecyclerViewAdapter(
     private val context: Context,
     private var mockTargetList: ArrayList<MockTarget>,
@@ -42,16 +69,71 @@ class MainRecyclerViewAdapter(
         }
     }
 
+    /**
+     * Interface used to receive message from [MainRecyclerViewListener].
+     *
+     * @author lucka-me
+     * @since 0.1
+     */
     interface MainRecyclerViewListener {
-        fun onRemovedAt(index: Int)
+        /**
+         * Called when mock target removed from the [mockTargetList]
+         *
+         * @param [position] The position of removed target
+         *
+         * @author lucka-me
+         * @since 0.1
+         */
+        fun onRemovedAt(position: Int)
     }
 
+    /**
+     * Interface to receive message of click event on items (cards), with the position of the
+     * clicked card.
+     *
+     * @author lucka-me
+     * @since 0.1.1
+     */
     interface OnItemClickListener {
+        /**
+         * Called when item been clicked.
+         *
+         * @param [position] Position of clicked item
+         *
+         * @author lucka-me
+         * @since 0.1.1
+         */
         fun onClickAt(position: Int)
+        /**
+         * Called when item been long clicked
+         *
+         * @param [position] Position of clicked item
+         *
+         * @author lucka-me
+         * @since 0.1.1
+         */
         fun onLongClickAt(position: Int)
     }
 
-    class ViewHolderCardLocation(
+    /**
+     * ViewHolder of card to present [MockTarget].
+     *
+     * ## Public Attributes
+     * - [longitudeText]
+     * - [latitudeText]
+     * - [enableCheckBox]
+     *
+     * @param [itemView] View of the item
+     * @param [onItemClickListener] See [OnItemClickListener]
+     *
+     * @author lucka-me
+     * @since 0.1
+     *
+     * @property [longitudeText] TextView to present [MockTarget.longitude]
+     * @property [latitudeText] TextView to present [MockTarget.latitude]
+     * @property [enableCheckBox] CheckBox to present [MockTarget.enabled]
+     */
+    class ViewHolderCardMockTarget(
         itemView: View,
         private val onItemClickListener: OnItemClickListener
     ) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
@@ -79,11 +161,11 @@ class MainRecyclerViewAdapter(
         val view = LayoutInflater
             .from(context)
             .inflate(R.layout.card_mock_target, parent, false)
-        return ViewHolderCardLocation(view, onItemClickListener)
+        return ViewHolderCardMockTarget(view, onItemClickListener)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is ViewHolderCardLocation) {
+        if (holder is ViewHolderCardMockTarget) {
             holder.enableCheckBox.isChecked = mockTargetList[position].enabled
             holder.longitudeText.text = Location.convert(
                 mockTargetList[position].location.longitude,
@@ -100,12 +182,27 @@ class MainRecyclerViewAdapter(
         return mockTargetList.size
     }
 
+    /**
+     * Should called when new target added to [mockTargetList].
+     *
+     * @param [count] Quantity of added mock targets, 1 for default
+     *
+     * @author lucka-me
+     * @since 0.1
+     */
     fun notifyAddMockTarget(count: Int = 1) {
         notifyItemRangeInserted(mockTargetList.size - count, count)
     }
 
+    /**
+     * Should called when target removed from [mockTargetList].
+     *
+     * @param [position] The position of removed target
+     *
+     * @author lucka-me
+     * @since 0.1
+     */
     fun notifyRemoveMockTarget(position: Int) {
         notifyItemRemoved(position)
-
     }
 }

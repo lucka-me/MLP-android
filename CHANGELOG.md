@@ -3,6 +3,19 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.1.2] - 2018-09-01
+- 0.1.1(54) -> 0.1.2(62)
+- New function: Detect Enable mock location option and alert
+
+### Added
+- Detect if the Enable mock location option turned on before starting service
+- Alert if the option is off
+
+### Changed
+- Code documented
+```
+
+```markdown
 ## [0.1.1] - 2018-08-31
 - 0.1(33) -> 0.1.1(54)
 - Bug fixed
@@ -17,7 +30,6 @@
 
 ### Fixed
 - Service won't update mock location if the last target is disabled
-
 ```
 
 ```markdown

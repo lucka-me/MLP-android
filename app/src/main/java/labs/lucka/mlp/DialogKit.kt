@@ -6,36 +6,36 @@ import android.content.DialogInterface
 import android.graphics.drawable.Drawable
 
 /**
- * 对话框工具，提供快速显示简单对话框的方法
+ * Display dialogs in a bit better way.
  *
- * ## 方法列表
+ * ## Public Methods
  * - [showDialog]
  * - [showSimpleAlert]
  *
  * @author lucka-me
- * @since 1.5.0
+ * @since 0.1
  */
 class DialogKit {
 
     companion object {
 
         /**
-         * 显示对话框
+         * Display a dialog
          *
-         * @param [context] 环境
-         * @param [titleId] 标题资源 ID
-         * @param [message] 消息
-         * @param [positiveButtonTextId] PositiveButton 文字资源 ID，默认为「确认」
-         * @param [positiveButtonListener] PositiveButton 点击监听器，可选
-         * @param [negativeButtonTextId] NegativeButton 文字资源 ID，可选
-         * @param [negativeButtonListener] NegativeButton 点击监听器，可选
-         * @param [icon] 图标，可选
-         * @param [cancelable] 是否可快速取消，可选
+         * @param [context] The context
+         * @param [titleId] Resource ID for Title
+         * @param [message] String for message
+         * @param [positiveButtonTextId] Resource ID for PositiveButton text, CONFIRM for default
+         * @param [positiveButtonListener] OnClickListener for PositiveButton, nullable
+         * @param [negativeButtonTextId] Resource ID for NegativeButton text, nullable
+         * @param [negativeButtonListener] OnClickListener for NegativeButton, nullable
+         * @param [icon] Icon for dialog, nullable
+         * @param [cancelable] Could dialog canceled by tapping outside or back button, nullable
          *
-         * @see <a href="https://www.jianshu.com/p/6bd7dd1cd491">使用着色器修改 Drawable 颜色</a>
+         * @see <a href="https://www.jianshu.com/p/6bd7dd1cd491">使用着色器修改 Drawable 颜色 | 简书</a>
          *
          * @author lucka-me
-         * @since 1.5.0
+         * @since 0.1
          */
         fun showDialog(
             context: Context, titleId: Int, message: String?,
@@ -62,20 +62,20 @@ class DialogKit {
         }
 
         /**
-         * 显示对话框
+         * Display a dialog
          *
-         * @param [context] 环境
-         * @param [titleId] 标题资源 ID
-         * @param [messageId] 消息
-         * @param [positiveButtonTextId] PositiveButton 文字资源 ID，默认为「确认」
-         * @param [positiveButtonListener] PositiveButton 点击监听器，可选
-         * @param [negativeButtonTextId] NegativeButton 文字资源 ID，可选
-         * @param [negativeButtonListener] NegativeButton 点击监听器，可选
-         * @param [icon] 图标，可选
-         * @param [cancelable] 是否可快速取消，可选
+         * @param [context] The context
+         * @param [titleId] Resource ID for Title
+         * @param [messageId] Resource ID for message
+         * @param [positiveButtonTextId] Resource ID for PositiveButton text, CONFIRM for default
+         * @param [positiveButtonListener] OnClickListener for PositiveButton, nullable
+         * @param [negativeButtonTextId] Resource ID for NegativeButton text, nullable
+         * @param [negativeButtonListener] OnClickListener for NegativeButton, nullable
+         * @param [icon] Icon for dialog, nullable
+         * @param [cancelable] Could dialog canceled by tapping outside or back button, nullable
          *
          * @author lucka-me
-         * @since 1.5.0
+         * @since 0.1
          */
         fun showDialog(
             context: Context, titleId: Int, messageId: Int,
@@ -97,26 +97,26 @@ class DialogKit {
         }
 
         /**
-         * 显示简单警告对话框
+         * Display a simple alert with a CONFIRM button and un-cancelable
          *
-         * @param [context] 环境
-         * @param [message] 消息
+         * @param [context] The context
+         * @param [message] String for message to display
          *
          * @author lucka-me
-         * @since 1.5.0
+         * @since 0.1
          */
         fun showSimpleAlert(context: Context, message: String?) {
             showDialog(context, R.string.alert_title, message, cancelable = false)
         }
 
         /**
-         * 显示简单警告对话框
+         * Display a simple alert with a CONFIRM button and un-cancelable
          *
-         * @param [context] 环境
-         * @param [messageId] 消息资源 ID
+         * @param [context] The context
+         * @param [messageId] Resource ID for message to display
          *
          * @author lucka-me
-         * @since 1.5.0
+         * @since 0.1
          */
         fun showSimpleAlert(context: Context, messageId: Int) {
             showSimpleAlert(context, context.getString(messageId))
