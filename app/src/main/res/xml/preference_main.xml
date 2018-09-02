@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/pref_provider_category_title">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_provider_gps_key"
+            android:summary="@string/pref_provider_gps_summary"
+            android:title="@string/pref_provider_gps_title" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_provider_network_key"
+            android:summary="@string/pref_provider_network_summary"
+            android:title="@string/pref_provider_network_title" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

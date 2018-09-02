@@ -13,14 +13,20 @@ import android.os.Build
 import android.os.IBinder
 import android.os.SystemClock
 import android.support.v4.app.NotificationCompat
+import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.runOnUiThread
 import java.io.File
 import java.io.FileInputStream
 import java.io.ObjectInputStream
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * A (foreground) service to provide mock location
+ *
+ * ## Changelog
+ * ### 0.1.3
+ * - Send mock location to the providers enabled in preference
  *
  * ## Attributes
  * ### Private
@@ -31,6 +37,7 @@ import java.util.*
  * - [currentTargetIndex]
  * - [notificationManager]
  * - [notificationId]
+ * - [targetProviderList]
  * ### Static
  * - [INTERVAL]
  * - [ACCURACY]
@@ -55,6 +62,8 @@ import java.util.*
  * @property [currentTargetIndex] Used to identify which target in [enabledMockTargetList] should be sent
  * @property [notificationManager] Used to send notifications and create notification channel in O and above
  * @property [notificationId] Used as unique id for notifications
+ * @property [targetProviderList] ArrayList for enabled providers
+ *
  * @property [INTERVAL] Interval between two mock location updates
  * @property [ACCURACY] Accuracy set for mock locations
  * @property [CHANNEL_ID] Used for notification channel
@@ -69,6 +78,7 @@ class MockLocationProviderService : Service() {
     private var currentTargetIndex: Int = 0
     private lateinit var notificationManager: NotificationManager
     private var notificationId = 0
+    private var targetProviderList: ArrayList<String> = ArrayList(0)
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
@@ -126,39 +136,43 @@ class MockLocationProviderService : Service() {
                 enabledMockTargetList.add(mockTarget)
         }
 
-        // Setup location manager
-        try {
-            locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            locationManager.addTestProvider(
-                LocationManager.GPS_PROVIDER,
-                false, false,false,false,
-                true,true, true,
-                Criteria.POWER_LOW, Criteria.ACCURACY_FINE
-            )
-            locationManager.addTestProvider(
-                LocationManager.NETWORK_PROVIDER,
-                false, false,false,false,
-                true,true, true,
-                Criteria.POWER_LOW, Criteria.ACCURACY_FINE
-            )
-            locationManager.setTestProviderEnabled(LocationManager.GPS_PROVIDER, true)
-            locationManager.setTestProviderEnabled(LocationManager.NETWORK_PROVIDER, true)
-            locationManager.setTestProviderStatus(
-                LocationManager.GPS_PROVIDER,
-                LocationProvider.AVAILABLE,
-                null,
-                System.currentTimeMillis()
-            )
-            locationManager.setTestProviderStatus(
-                LocationManager.NETWORK_PROVIDER,
-                LocationProvider.AVAILABLE,
-                null,
-                System.currentTimeMillis()
-            )
-        } catch (error: Exception) {
-            pushNotification(error.message)
-            stopSelf()
+        // Get preferences
+        targetProviderList.clear()
+        if (defaultSharedPreferences
+                .getBoolean(getString(R.string.pref_provider_gps_key), true)
+        ) {
+            targetProviderList.add(LocationManager.GPS_PROVIDER)
         }
+        if (defaultSharedPreferences
+                .getBoolean(getString(R.string.pref_provider_network_key), true)
+        ) {
+            targetProviderList.add(LocationManager.NETWORK_PROVIDER)
+        }
+
+        // Setup location manager
+        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        for (targetProvider in targetProviderList) {
+            try {
+                locationManager.addTestProvider(
+                    targetProvider,
+                    false, false,false,
+                    false,
+                    true,true, true,
+                    Criteria.POWER_LOW, Criteria.ACCURACY_FINE
+                )
+                locationManager.setTestProviderEnabled(targetProvider, true)
+                locationManager.setTestProviderStatus(
+                    targetProvider,
+                    LocationProvider.AVAILABLE,
+                    null,
+                    System.currentTimeMillis()
+                )
+            } catch (error: Exception) {
+                pushNotification(error.message)
+                stopSelf()
+            }
+        }
+
 
 
         // Setup timer task
@@ -169,18 +183,19 @@ class MockLocationProviderService : Service() {
                 runOnUiThread {
 
                     val location = enabledMockTargetList[currentTargetIndex].location
-                    location.provider = LocationManager.GPS_PROVIDER
                     location.accuracy = ACCURACY
                     location.time = Date().time
                     location.elapsedRealtimeNanos = SystemClock.elapsedRealtimeNanos()
-                    try {
-                        locationManager.setTestProviderLocation(LocationManager.GPS_PROVIDER, location)
-                        location.provider = LocationManager.NETWORK_PROVIDER
-                        locationManager.setTestProviderLocation(LocationManager.NETWORK_PROVIDER, location)
-                    } catch (error: Exception) {
-                        pushNotification(error.message)
-                        stopSelf()
+                    for (targetProvider in targetProviderList) {
+                        try {
+                            location.provider = targetProvider
+                            locationManager.setTestProviderLocation(targetProvider, location)
+                        } catch (error: Exception) {
+                            pushNotification(error.message)
+                            stopSelf()
+                        }
                     }
+
                     currentTargetIndex++
                     if (currentTargetIndex == enabledMockTargetList.size) currentTargetIndex = 0
 
@@ -198,14 +213,15 @@ class MockLocationProviderService : Service() {
         timer.cancel()
         timer.purge()
 
-        try {
-            locationManager.setTestProviderEnabled(LocationManager.GPS_PROVIDER, false)
-            locationManager.setTestProviderEnabled(LocationManager.NETWORK_PROVIDER, false)
-            locationManager.removeTestProvider(LocationManager.GPS_PROVIDER)
-            locationManager.removeTestProvider(LocationManager.NETWORK_PROVIDER)
-        } catch (error: Exception) {
-            pushNotification(error.message)
+        for (targetProvider in targetProviderList) {
+            try {
+                locationManager.setTestProviderEnabled(targetProvider, false)
+                locationManager.removeTestProvider(targetProvider)
+            } catch (error: Exception) {
+                pushNotification(error.message)
+            }
         }
+
 
         super.onDestroy()
     }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_title">Preference</string>
+
+    <string name="pref_provider_category_title">Provider</string>
+    <string name="pref_provider_gps_key">pref_provider_gps</string>
+    <string name="pref_provider_gps_title">Mock GPS Provider</string>
+    <string name="pref_provider_gps_summary">Send mock location to GPS_PROVIDER</string>
+    <string name="pref_provider_network_key">pref_provider_network</string>
+    <string name="pref_provider_network_title">Mock Network Provider</string>
+    <string name="pref_provider_network_summary">Send mock location to NETWORK_PROVIDER</string>
+</resources>

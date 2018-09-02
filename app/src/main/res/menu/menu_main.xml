@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="labs.lucka.mlp.MainActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/menu_main_preference"
         android:orderInCategory="100"
-        android:title="@string/action_preference"
+        android:title="@string/menu_main_preference"
         app:showAsAction="never" />
 </menu>

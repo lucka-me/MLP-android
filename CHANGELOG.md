@@ -3,7 +3,23 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
-## [0.1.2] - 2018-09-01
+## [0.1.4] - 2018-09-02
+- 0.1.2(62) -> 0.1.4(115)
+- New feature: Preference, enable/disable providers
+
+### Added
+- Preference screen
+- Enable and disable providers from receiving mock locations
+
+### Changed
+- App icon improved. Since the Assest Studio seems to not support some features
+  of SVG, the icon is generated manually. Looking for a better way.
+- Switch compileSdkVersion and targetSdkVersion to 27 temporarily for some
+  unresolved issues
+```
+
+```markdown
+## [0.1.2] - 2018-09-02
 - 0.1.1(54) -> 0.1.2(62)
 - New function: Detect Enable mock location option and alert
 

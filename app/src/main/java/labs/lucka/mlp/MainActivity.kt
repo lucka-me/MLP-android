@@ -13,6 +13,8 @@ import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -111,7 +113,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    /*
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
@@ -123,11 +125,17 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
 
+        when(item.itemId) {
+            R.id.menu_main_preference -> {
+                startActivity(Intent(this, PreferenceMainActivity::class.java))
+            }
+        }
+
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.menu_main_preference -> true
             else -> super.onOptionsItemSelected(item)
         }
-    }*/
+    }
 
     /**
      * Save the [mockTargetList] to file.
