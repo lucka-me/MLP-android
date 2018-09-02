@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">M.L.P.</string>
-    <string name="data_filename">mlp.data</string>
+    <string name="data_filename">mlp_target.json</string>
     <string name="test_location_provider">mlp_test</string>
 
     <!-- Menu -->
     <string name="menu_main_preference">Preference</string>
+    <string name="menu_main_about">About</string>
 
     <!-- Dialog -->
     <string name="alert_title">Alert</string>
@@ -12,9 +13,10 @@
     <string name="cancel">Cancel</string>
     <string name="settings">Settings</string>
     <!-- Add mock target dialog -->
+    <string name="add_mock_target_title">Add Mock Location Target</string>
     <string name="longitude_title">Longitude</string>
     <string name="latitude_title">Latitude</string>
-    <string name="add_mock_target_title">Add Mock Location Target</string>
+    <string name="title_title">Title</string>
     <string name="add_mock_target_success">Success.</string>
     <!-- Delete mock target dialog -->
     <string name="delete_mock_target_confirm_title">Confirm deletion</string>
@@ -25,6 +27,7 @@
 
     <!-- Main recycler view -->
     <string name="example_coordinate">000:00:00.00000</string>
+    <string name="target_title_default">Target %d</string>
 
     <!-- Service -->
     <string name="pref_is_service_online_key">pref_is_service_online</string>

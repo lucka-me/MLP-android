@@ -119,6 +119,7 @@ class MainRecyclerViewAdapter(
      * ViewHolder of card to present [MockTarget].
      *
      * ## Public Attributes
+     * - [titleText]
      * - [longitudeText]
      * - [latitudeText]
      * - [enableCheckBox]
@@ -129,18 +130,20 @@ class MainRecyclerViewAdapter(
      * @author lucka-me
      * @since 0.1
      *
-     * @property [longitudeText] TextView to present [MockTarget.longitude]
-     * @property [latitudeText] TextView to present [MockTarget.latitude]
-     * @property [enableCheckBox] CheckBox to present [MockTarget.enabled]
+     * @property [titleText] [TextView] to present [MockTarget.title]
+     * @property [longitudeText] [TextView] to present [MockTarget.longitude]
+     * @property [latitudeText] [TextView] to present [MockTarget.latitude]
+     * @property [enableCheckBox] [CheckBox] to present [MockTarget.enabled]
      */
     class ViewHolderCardMockTarget(
         itemView: View,
         private val onItemClickListener: OnItemClickListener
     ) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
 
-        var longitudeText: TextView = itemView.findViewById(R.id.longitudeText)
-        var latitudeText: TextView = itemView.findViewById(R.id.latitudeText)
-        var enableCheckBox: CheckBox = itemView.findViewById(R.id.enableCheckBox)
+        val titleText: TextView = itemView.findViewById(R.id.titleText)
+        val longitudeText: TextView = itemView.findViewById(R.id.longitudeText)
+        val latitudeText: TextView = itemView.findViewById(R.id.latitudeText)
+        val enableCheckBox: CheckBox = itemView.findViewById(R.id.enableCheckBox)
 
         init {
             itemView.setOnClickListener(this)
@@ -166,7 +169,11 @@ class MainRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is ViewHolderCardMockTarget) {
-            holder.enableCheckBox.isChecked = mockTargetList[position].enabled
+            holder.titleText.text = if (mockTargetList[position].title.isBlank()) {
+                String.format(context.getString(R.string.target_title_default), position)
+            } else {
+                mockTargetList[position].title
+            }
             holder.longitudeText.text = Location.convert(
                 mockTargetList[position].location.longitude,
                 Location.FORMAT_SECONDS
@@ -175,6 +182,7 @@ class MainRecyclerViewAdapter(
                 mockTargetList[position].location.latitude,
                 Location.FORMAT_SECONDS
             )
+            holder.enableCheckBox.isChecked = mockTargetList[position].enabled
         }
     }
 

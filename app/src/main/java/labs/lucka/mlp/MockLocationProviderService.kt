@@ -1,9 +1,6 @@
 package labs.lucka.mlp
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.Service
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.location.Criteria
@@ -14,10 +11,6 @@ import android.os.IBinder
 import android.os.SystemClock
 import android.support.v4.app.NotificationCompat
 import org.jetbrains.anko.defaultSharedPreferences
-import org.jetbrains.anko.runOnUiThread
-import java.io.File
-import java.io.FileInputStream
-import java.io.ObjectInputStream
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -25,8 +18,10 @@ import kotlin.collections.ArrayList
  * A (foreground) service to provide mock location
  *
  * ## Changelog
- * ### 0.1.3
+ * ### 0.1.4
  * - Send mock location to the providers enabled in preference
+ * ### 0.2
+ * - Migrated [isServiceOnline] and [isMockLocationEnabled] from [MainActivity]
  *
  * ## Attributes
  * ### Private
@@ -40,7 +35,6 @@ import kotlin.collections.ArrayList
  * - [targetProviderList]
  * ### Static
  * - [INTERVAL]
- * - [ACCURACY]
  * - [CHANNEL_ID]
  * - [FOREGROUND_ID]
  *
@@ -51,6 +45,9 @@ import kotlin.collections.ArrayList
  * - [onBind]
  * ### Private
  * - [pushNotification]
+ * ### Static
+ * - [isServiceOnline]
+ * - [isMockLocationEnabled]
  *
  * @author lucka-me
  * @since 0.1
@@ -65,7 +62,6 @@ import kotlin.collections.ArrayList
  * @property [targetProviderList] ArrayList for enabled providers
  *
  * @property [INTERVAL] Interval between two mock location updates
- * @property [ACCURACY] Accuracy set for mock locations
  * @property [CHANNEL_ID] Used for notification channel
  * @property [FOREGROUND_ID] Used as id of foreground service notification
  */
@@ -113,20 +109,8 @@ class MockLocationProviderService : Service() {
         notificationId = 0
 
         // Load data
-        val filename = getString(R.string.data_filename)
-        val file = File(filesDir, filename)
-        val fileInputStream: FileInputStream
-        val objectInputStream: ObjectInputStream
-        if (!file.exists()) {
-            stopSelf()
-        }
         try {
-            fileInputStream = FileInputStream(file)
-            objectInputStream = ObjectInputStream(fileInputStream)
-            @Suppress("UNCHECKED_CAST")
-            mockTargetList = objectInputStream.readObject() as ArrayList<MockTarget>
-            objectInputStream.close()
-            fileInputStream.close()
+            mockTargetList = DataKit.loadData(this)
         } catch (error: Exception) {
             pushNotification(error.message)
             stopSelf()
@@ -173,33 +157,26 @@ class MockLocationProviderService : Service() {
             }
         }
 
-
-
         // Setup timer task
         currentTargetIndex = 0
-        timer = Timer(true)
+        timer = Timer(false)
         timer.schedule(object : TimerTask() {
             override fun run() {
-                runOnUiThread {
-
-                    val location = enabledMockTargetList[currentTargetIndex].location
-                    location.accuracy = ACCURACY
-                    location.time = Date().time
-                    location.elapsedRealtimeNanos = SystemClock.elapsedRealtimeNanos()
-                    for (targetProvider in targetProviderList) {
-                        try {
-                            location.provider = targetProvider
-                            locationManager.setTestProviderLocation(targetProvider, location)
-                        } catch (error: Exception) {
-                            pushNotification(error.message)
-                            stopSelf()
-                        }
+                val location = enabledMockTargetList[currentTargetIndex].location
+                location.time = Date().time
+                location.elapsedRealtimeNanos = SystemClock.elapsedRealtimeNanos()
+                for (targetProvider in targetProviderList) {
+                    try {
+                        location.provider = targetProvider
+                        locationManager.setTestProviderLocation(targetProvider, location)
+                    } catch (error: Exception) {
+                        pushNotification(error.message)
+                        stopSelf()
                     }
-
-                    currentTargetIndex++
-                    if (currentTargetIndex == enabledMockTargetList.size) currentTargetIndex = 0
-
                 }
+
+                currentTargetIndex++
+                if (currentTargetIndex == enabledMockTargetList.size) currentTargetIndex = 0
             }
         }, 0, INTERVAL)
 
@@ -252,8 +229,66 @@ class MockLocationProviderService : Service() {
 
     companion object {
         const val INTERVAL = 5000L
-        const val ACCURACY = 5.0F
         private const val CHANNEL_ID = "M.L.P. Notification"
         private const val FOREGROUND_ID = 1
+
+        /**
+         * Used to detect if the [MockLocationProviderService] is running.
+         *
+         * ## Changelog
+         * ### 0.1.1
+         * - Use [ActivityManager.getRunningServices] instead of PreferenceManager
+         * ### 0.2
+         * - Migrated to [MockLocationProviderService] as a static method
+         *
+         * @param [context] The context
+         *
+         * @return True if is running, false if not.
+         *
+         * @author lucka-me
+         * @since 0.1
+         */
+        fun isServiceOnline(context: Context): Boolean {
+            val activityManager =
+                context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            @Suppress("DEPRECATION")
+            for (serviceInfo in activityManager.getRunningServices(Int.MAX_VALUE)) {
+                if (serviceInfo.service.className == MockLocationProviderService::class.java.name)
+                    return true
+            }
+            return false
+        }
+
+        /**
+         * Used to detect if the Enabled mock location is on and available for MLP.
+         *
+         * ## Changelog
+         * ### 0.2
+         * - Migrated to [MockLocationProviderService] as a static method
+         *
+         * @param [context] The context
+         *
+         * @return True if the option is on and available for MLP, false if off or unavailable.
+         *
+         * @author lucka-me
+         * @since 0.1.2
+         */
+        fun isMockLocationEnabled(context: Context): Boolean {
+            val testLocationManager =
+                context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            try {
+                testLocationManager.addTestProvider(
+                    context.getString(R.string.test_location_provider),
+                    false, false,false, false,
+                    true,true, true,
+                    Criteria.POWER_LOW, Criteria.ACCURACY_FINE
+                )
+            } catch (error: SecurityException) {
+                return false
+            }
+            testLocationManager
+                .removeTestProvider(context.getString(R.string.test_location_provider))
+            return true
+        }
     }
 }

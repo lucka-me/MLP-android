@@ -1,15 +1,23 @@
 package labs.lucka.mlp
 
 import android.location.Location
-import java.io.Serializable
 
 /**
- * A serializable class used to save data of a mock target
+ * A data class used to save data of a mock target
+ *
+ * ## Changelog
+ * ### 0.2
+ * - Switched to data class
+ * - Add [title], [interval], [accuracy] and [altitude]
  *
  * ## Public Attribute
  * - [longitude]
  * - [latitude]
  * - [enabled]
+ * - [title]
+ * - [interval]
+ * - [accuracy]
+ * - [altitude]
  * ### Getters and Setters
  * - [location]
  *
@@ -22,18 +30,25 @@ import java.io.Serializable
  *
  * @property [location] Getter and Setter of location ([longitude] and  [latitude])
  */
-class MockTarget(var longitude: Double, var latitude: Double, var enabled: Boolean = true)
-    : Serializable {
+data class MockTarget(
+    var longitude: Double, var latitude: Double, var enabled: Boolean = true,
+    var title: String = "", var interval: Long = 5000,
+    var accuracy: Float? = null, var altitude: Double? = null
+) {
 
     var location: Location
         set(value) {
-            this.longitude = value.longitude
-            this.latitude = value.latitude
+            longitude = value.longitude
+            latitude = value.latitude
+            accuracy = if (value.hasAccuracy()) value.accuracy else null
+            altitude = if (value.hasAltitude()) value.altitude else null
         }
         get() {
             val location = Location("")
-            location.longitude = this.longitude
-            location.latitude = this.latitude
+            location.longitude = longitude
+            location.latitude = latitude
+            if (accuracy != null) location.accuracy = accuracy!!
+            if (altitude != null) location.altitude = altitude!!
             return location
         }
 }

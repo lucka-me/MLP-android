@@ -1,6 +1,6 @@
 <h1 align=center><a href="#"><img src="./Resource/Banner.svg" alt="Banner"></a></h1>
 <p align=center>
-    <a href="./CHANGELOG.md"><img alt="Version 0.1.3" src="https://img.shields.io/badge/version-0.1.3-red.svg"/></a>
+    <a href="./CHANGELOG.md"><img alt="Version 0.2" src="https://img.shields.io/badge/version-0.2-orange.svg"/></a>
     <a href="https://www.android.com/versions/lollipop-5-0/"><img alt="API Level 21" src="https://img.shields.io/badge/API_Level-21-A4C639.svg"/></a>
 </p>
 
@@ -29,25 +29,27 @@ For usage in mainland China: The coordinates are in WGS-84, not GCJ-02. You can 
 I'm not sure if I'll develop it in the future, but since there are so many known issues, I'd like to fix and improve MLP when I'm free and glad to do so.
 
 - [ ] Detect running service in a better way
-- [x] Detect if the mock location options are ready
+- [x] `0.1.2` Detect if the mock location options are ready
 - [ ] More data for mock target:
-  - [ ] Title / Description
-  - [ ] Update interval
-  - [ ] Accuracy
-  - [ ] Altitude
+  - [x] `0.2` Title / Description
+  - [x] `0.2` Update interval
+  - [x] `0.2` Accuracy
+  - [x] `0.2` Altitude
+  - [ ] Update interface of dialog
 - [ ] Import target list from:
   - [ ] GPX file
   - [ ] Clipboard
 - [ ] Support preferences:
-  - [x] Enable GPS_PROVODER
-  - [x] Enable NETWORK_PROVODER
+  - [x] `0.1.4` Enable GPS_PROVODER
+  - [x] `0.1.4` Enable NETWORK_PROVODER
   - [ ] Enable a custom provider
 - [ ] UI improvement
   - [ ] Swipe to delete card
   - [ ] Re-order the cards by drag and drop
+  - [ ] Long press to check details / edit
 - [ ] Service Noification:
   - [ ] Current target
-- [x] Document the code
+- [x] `0.1.2` Document the code
 
 ## License
 This project is licensed under [MIT License](./LICENSE).
