@@ -164,8 +164,8 @@ class MainActivity : AppCompatActivity() {
      */
     private fun updateFabService() {
         fabService.setImageDrawable(getDrawable(
-            if (MockLocationProviderService.isServiceOnline(this)) R.drawable.ic_cancel
-            else R.drawable.ic_start
+            if (MockLocationProviderService.isServiceOnline(this)) R.drawable.ic_stop_service
+            else R.drawable.ic_start_service
         ))
     }
 

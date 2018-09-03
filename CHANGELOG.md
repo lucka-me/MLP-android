@@ -3,6 +3,20 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.2.1] - 2018-09-03
+- 0.2(144) -> 0.2.1(156)
+- Fixed: Incomplete location object
+
+### Changed
+- Swap the fabService and fabAddMockTarget
+- FabService has two new icons
+
+### Fixed
+- Incomplete location object when sending mock location, accuracy is non-
+  nullable and 5.0 for default now
+```
+
+```markdown
 ## [0.2] - 2018-09-02
 - 0.1.4(115) -> 0.2(144)
 - New data structure

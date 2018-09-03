@@ -36,7 +36,7 @@
     <include layout="@layout/content_main" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabAddMockTarget"
+        android:id="@+id/fabService"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
@@ -46,10 +46,10 @@
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
         app:rippleColor="@color/colorAccentDark"
-        app:srcCompat="@drawable/ic_add" />
+        app:srcCompat="@drawable/ic_start_service" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabService"
+        android:id="@+id/fabAddMockTarget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
@@ -62,6 +62,6 @@
         app:layout_anchor="@id/nestedScrollView"
         app:layout_anchorGravity="bottom|end"
         app:rippleColor="@color/colorPrimaryDark"
-        app:srcCompat="@drawable/ic_start" />
+        app:srcCompat="@drawable/ic_add" />
 
 </android.support.design.widget.CoordinatorLayout>

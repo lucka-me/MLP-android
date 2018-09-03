@@ -9,6 +9,8 @@ import android.location.Location
  * ### 0.2
  * - Switched to data class
  * - Add [title], [interval], [accuracy] and [altitude]
+ * ### 0.2.1
+ * - [accuracy] is non-nullable now for the requirement of mock location
  *
  * ## Public Attribute
  * - [longitude]
@@ -33,21 +35,21 @@ import android.location.Location
 data class MockTarget(
     var longitude: Double, var latitude: Double, var enabled: Boolean = true,
     var title: String = "", var interval: Long = 5000,
-    var accuracy: Float? = null, var altitude: Double? = null
+    var accuracy: Float = 5F, var altitude: Double? = null
 ) {
 
     var location: Location
         set(value) {
             longitude = value.longitude
             latitude = value.latitude
-            accuracy = if (value.hasAccuracy()) value.accuracy else null
+            accuracy = if (value.hasAccuracy()) value.accuracy else 5F
             altitude = if (value.hasAltitude()) value.altitude else null
         }
         get() {
             val location = Location("")
             location.longitude = longitude
             location.latitude = latitude
-            if (accuracy != null) location.accuracy = accuracy!!
+            location.accuracy = accuracy
             if (altitude != null) location.altitude = altitude!!
             return location
         }

@@ -103,7 +103,7 @@ class MockLocationProviderService : Service() {
                     Intent(this, MainActivity::class.java),
                     0
                 ))
-                .setSmallIcon(R.drawable.ic_start)
+                .setSmallIcon(R.drawable.ic_start_service)
                 .build()
         )
         notificationId = 0
@@ -163,11 +163,11 @@ class MockLocationProviderService : Service() {
         timer.schedule(object : TimerTask() {
             override fun run() {
                 val location = enabledMockTargetList[currentTargetIndex].location
-                location.time = Date().time
-                location.elapsedRealtimeNanos = SystemClock.elapsedRealtimeNanos()
                 for (targetProvider in targetProviderList) {
                     try {
                         location.provider = targetProvider
+                        location.time = Date().time
+                        location.elapsedRealtimeNanos = SystemClock.elapsedRealtimeNanos()
                         locationManager.setTestProviderLocation(targetProvider, location)
                     } catch (error: Exception) {
                         pushNotification(error.message)
