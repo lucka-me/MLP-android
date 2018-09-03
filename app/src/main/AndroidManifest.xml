@@ -34,6 +34,12 @@
             android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity"/>
 
+        <activity
+            android:name=".PreferenceAboutActivity"
+            android:label="@string/about_title"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity"/>
+
         <service
             android:name=".MockLocationProviderService"
             android:description="@string/service_description"

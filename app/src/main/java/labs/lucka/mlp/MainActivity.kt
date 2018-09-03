@@ -72,6 +72,7 @@ class MainActivity : AppCompatActivity() {
             MainRecyclerViewAdapter(this, mockTargetList, mainRecyclerViewListener)
         mainRecyclerView.layoutManager = LinearLayoutManager(this)
         mainRecyclerView.adapter = mainRecyclerViewAdapter
+        mainRecyclerView.isNestedScrollingEnabled = false
 
         fabAddMockTarget.setOnClickListener { _ ->
             DialogKit.showAddMockTargetDialog(
@@ -93,11 +94,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         nestedScrollView.setOnScrollChangeListener(
-            NestedScrollView.OnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
+            NestedScrollView.OnScrollChangeListener { _, scrollX, scrollY, oldScrollX, oldScrollY ->
                 if (scrollY > oldScrollY) {
-                    fabService.hide()
+                    fabAddMockTarget.hide()
                 } else {
-                    fabService.show()
+                    fabAddMockTarget.show()
                 }
             }
         )
@@ -147,6 +148,9 @@ class MainActivity : AppCompatActivity() {
         when(item.itemId) {
             R.id.menu_main_preference -> {
                 startActivity(Intent(this, PreferenceMainActivity::class.java))
+            }
+            R.id.menu_main_about -> {
+                startActivity(Intent(this, PreferenceAboutActivity::class.java))
             }
         }
 

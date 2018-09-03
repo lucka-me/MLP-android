@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">M.L.P.</string>
+    <string name="app_name_full">Mock Location Provider</string>
     <string name="data_filename">mlp_target.json</string>
     <string name="test_location_provider">mlp_test</string>
 
@@ -13,10 +14,15 @@
     <string name="cancel">Cancel</string>
     <string name="settings">Settings</string>
     <!-- Add mock target dialog -->
-    <string name="add_mock_target_title">Add Mock Location Target</string>
+    <string name="add_mock_target_title">Add Mock Target</string>
+    <string name="tab_basic_title">Basic</string>
+    <string name="tab_advanced_title">Advanced</string>
     <string name="longitude_title">Longitude</string>
     <string name="latitude_title">Latitude</string>
     <string name="title_title">Title</string>
+    <string name="altitude_title">Altitude</string>
+    <string name="accuracy_title">Accuracy</string>
+    <string name="accuracy_default">5.0</string>
     <string name="add_mock_target_success">Success.</string>
     <!-- Delete mock target dialog -->
     <string name="delete_mock_target_confirm_title">Confirm deletion</string>

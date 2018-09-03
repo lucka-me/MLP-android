@@ -3,6 +3,19 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.2.2] - 2018-09-03
+- 0.2.1(156) -> 0.2.2(172)
+- New feature: AddMockTargetDialog with tabs
+
+### Added
+- Tabs in AddMockTargetDialog: basic and advanced
+- About screen
+
+### Fixed
+- FabAddMockTarget doesn't hide when scroll down
+```
+
+```markdown
 ## [0.2.1] - 2018-09-03
 - 0.2(144) -> 0.2.1(156)
 - Fixed: Incomplete location object

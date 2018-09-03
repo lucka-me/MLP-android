@@ -1,6 +1,5 @@
 package labs.lucka.mlp
 
-import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -51,7 +50,7 @@ class DialogKit {
             cancelable: Boolean? = null
         ) {
 
-            val builder = AlertDialog.Builder(context)
+            val builder = android.support.v7.app.AlertDialog.Builder(context)
                 .setTitle(titleId)
                 .setIcon(icon)
                 .setMessage(message)
@@ -168,6 +167,8 @@ class DialogKit {
          * ## Changelog
          * ### 0.2
          * - Migrated to [DialogKit]
+         * ### 0.2.2
+         * - Support TabHost
          *
          * @param [context] The context
          * @param [mockTargetList] The mock target list
@@ -176,6 +177,8 @@ class DialogKit {
          *
          * @author lucka-me
          * @since 0.1
+         *
+         * @see <a href="https://www.viralandroid.com/2015/09/simple-android-tabhost-and-tabwidget-example.html">Simple Android TabHost and TabWidget Example | Viral Android</a>
          */
         fun showAddMockTargetDialog(
             context: Context,
@@ -184,6 +187,21 @@ class DialogKit {
             onAdded: (() -> (Unit))
         ) {
             val dialogLayout = View.inflate(context, R.layout.dialog_add_mock_target, null)
+            val tabHost = dialogLayout.tabHost
+            tabHost.setup()
+            tabHost.addTab(
+                tabHost
+                    .newTabSpec(context.getString(R.string.tab_basic_title))
+                    .setContent(R.id.tab_basic)
+                    .setIndicator(context.getString(R.string.tab_basic_title))
+            )
+            tabHost.addTab(
+                tabHost
+                    .newTabSpec(context.getString(R.string.tab_advanced_title))
+                    .setContent(R.id.tab_advanced)
+                    .setIndicator(context.getString(R.string.tab_advanced_title))
+            )
+
             android.support.v7.app.AlertDialog.Builder(context)
                 .setTitle(R.string.add_mock_target_title)
                 .setView(dialogLayout)
@@ -191,13 +209,18 @@ class DialogKit {
                     val longitude = dialogLayout.longitudeEdit.text.toString().toDoubleOrNull()
                     val latitude = dialogLayout.latitudeEdit.text.toString().toDoubleOrNull()
                     val title = dialogLayout.titleEdit.text.toString()
+                    val altitude = dialogLayout.altitudeEdit.text.toString().toDoubleOrNull()
+                    val accuracy = dialogLayout.accuracyEdit.text.toString().toFloatOrNull()
                     if (longitude == null || latitude == null ||
                         longitude < -180 || longitude > 180||
                         latitude < -90 || latitude > 90
                     ) {
                         onCoordinateWrong()
                     } else {
-                        mockTargetList.add(MockTarget(longitude, latitude, title = title))
+                        mockTargetList.add(MockTarget(
+                            longitude, latitude, title = title,
+                            altitude = altitude, accuracy = accuracy ?: 5.0F
+                        ))
                         try {
                             DataKit.saveData(context, mockTargetList)
                         } catch (error: Exception) {
