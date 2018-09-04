@@ -4,7 +4,9 @@
     <string name="data_filename">mlp_target.json</string>
     <string name="test_location_provider">mlp_test</string>
 
-    <!-- Menu -->
+    <!-- Main Menu -->
+    <string name="menu_main_import">Import</string>
+    <string name="menu_main_export">Export</string>
     <string name="menu_main_preference">Preference</string>
     <string name="menu_main_about">About</string>
 
@@ -33,6 +35,16 @@
     <!-- Developer options dialog -->
     <string name="mock_location_option_title">Developer Options</string>
     <string name="mock_location_option_text">To provide mock location, you must turn on the Enable mock location option in the Developer Options, and select MLP in the Select mock location app option if the option exists.</string>
+    <!-- Import / export dialog -->
+    <string name="import_title">Import from</string>
+    <string name="export_title">Export As</string>
+    <string name="ie_gpx">GPX file</string>
+    <string name="ie_gpx_mime">*/*</string>
+    <string name="ie_json">JSON file</string>
+    <string name="ie_json_mime">*/*</string>
+    <string name="import_success">Imported %d target(s).</string>
+    <string name="import_empty">Imported nothing.</string>
+    <string name="import_failed">Imported failed.\n%s</string>
 
     <!-- Main recycler view -->
     <string name="example_coordinate">000:00:00.00000</string>

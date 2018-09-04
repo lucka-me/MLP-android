@@ -6,15 +6,26 @@
         android:title="@string/pref_provider_category_title">
 
         <SwitchPreference
-            android:defaultValue="true"
+            android:title="@string/pref_provider_gps_title"
             android:key="@string/pref_provider_gps_key"
             android:summary="@string/pref_provider_gps_summary"
-            android:title="@string/pref_provider_gps_title" />
+            android:defaultValue="true" />
         <SwitchPreference
-            android:defaultValue="true"
             android:key="@string/pref_provider_network_key"
+            android:title="@string/pref_provider_network_title"
             android:summary="@string/pref_provider_network_summary"
-            android:title="@string/pref_provider_network_title" />
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_ie_category_title" >
+
+        <SwitchPreference
+            android:key="@string/pref_ie_export_enabled_only_key"
+            android:title="@string/pref_ie_export_enabled_only_title"
+            android:summary="@string/pref_ie_export_enabled_only_summary"
+            android:defaultValue="false"/>
 
     </PreferenceCategory>
 

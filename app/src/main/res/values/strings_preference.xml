@@ -9,4 +9,9 @@
     <string name="pref_provider_network_key">pref_provider_network</string>
     <string name="pref_provider_network_title">Mock Network Provider</string>
     <string name="pref_provider_network_summary">Send mock location to NETWORK_PROVIDER</string>
+
+    <string name="pref_ie_category_title">Import / Export</string>
+    <string name="pref_ie_export_enabled_only_key">pref_ie_export_enabled_only</string>
+    <string name="pref_ie_export_enabled_only_title">Export Enabled Targets Only</string>
+    <string name="pref_ie_export_enabled_only_summary">Only enabled mock targets will be exported</string>
 </resources>

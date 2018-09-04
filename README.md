@@ -1,6 +1,6 @@
 <h1 align=center><a href="#"><img src="./Resource/Banner.svg" alt="Banner"></a></h1>
 <p align=center>
-    <a href="./CHANGELOG.md"><img alt="Version 0.2.3" src="https://img.shields.io/badge/version-0.2.3-orange.svg"/></a>
+    <a href="./CHANGELOG.md"><img alt="Version 0.2.4" src="https://img.shields.io/badge/version-0.2.4-orange.svg"/></a>
     <a href="https://www.android.com/versions/lollipop-5-0/"><img alt="API Level 21" src="https://img.shields.io/badge/API_Level-21-A4C639.svg"/></a>
 </p>
 
@@ -37,7 +37,8 @@ I'm not sure if I'll develop it in the future, but since there are so many known
   - [x] `0.2` Accuracy
   - [x] `0.2` Altitude
   - [x] `0.2.2` Update interface of dialog
-- [ ] Import target list from:
+- [ ] Import / export target list from / to:
+  - [x] `0.2.4` JSON file
   - [ ] GPX file
   - [ ] Clipboard
 - [ ] Support preferences:

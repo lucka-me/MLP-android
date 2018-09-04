@@ -4,6 +4,16 @@
 
 ```markdown
 ## [0.2.3] - 2018-09-04
+- 0.2.3(188) -> 0.2.4(200)
+- New feature: Import / export
+
+### Added
+- Import / export mock targets from / to JSON file using SAF
+- Export Enabled Targets Only option in Preference
+```
+
+```markdown
+## [0.2.3] - 2018-09-04
 - 0.2.2(172) -> 0.2.3(188)
 - New feature: Swipe to delete or edit
 

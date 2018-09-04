@@ -1,12 +1,13 @@
 package labs.lucka.mlp
 
-import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.provider.Settings
+import android.support.v7.app.AlertDialog
 import android.view.View
+import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.dialog_edit_mock_target.view.*
 
 /**
@@ -15,6 +16,7 @@ import kotlinx.android.synthetic.main.dialog_edit_mock_target.view.*
  * ## Public Methods
  * - [showDialog]
  * - [showSimpleAlert]
+ * - [showImportExportMenu]
  *
  * @author lucka-me
  * @since 0.1
@@ -51,7 +53,7 @@ class DialogKit {
             cancelable: Boolean? = null
         ) {
 
-            val builder = android.support.v7.app.AlertDialog.Builder(context)
+            val builder = AlertDialog.Builder(context)
                 .setTitle(titleId)
                 .setIcon(icon)
                 .setMessage(message)
@@ -204,7 +206,7 @@ class DialogKit {
                     .setIndicator(context.getString(R.string.tab_advanced_title))
             )
 
-            val dialog = android.support.v7.app.AlertDialog.Builder(context)
+            val dialog = AlertDialog.Builder(context)
                 .setTitle(R.string.add_mock_target_title)
                 .setView(dialogLayout)
                 .setPositiveButton(R.string.add) { _, _ ->
@@ -227,12 +229,12 @@ class DialogKit {
                 .setNegativeButton(R.string.cancel, null)
                 .setCancelable(false)
                 .show()
-            dialog.getButton(Dialog.BUTTON_POSITIVE).isEnabled = false
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
             var isLongitudeReady = false
             var isLatitudeReady = false
-            dialogLayout.longitudeEdit.setOnFocusChangeListener { v, hasFocus ->
+            dialogLayout.longitudeEdit.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
-                    dialog.getButton(Dialog.BUTTON_POSITIVE).isEnabled = false
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
                     return@setOnFocusChangeListener
                 }
                 val longitude = dialogLayout.longitudeEdit.text.toString().toDoubleOrNull()
@@ -244,12 +246,12 @@ class DialogKit {
                 } else {
                     isLongitudeReady = true
                 }
-                dialog.getButton(Dialog.BUTTON_POSITIVE).isEnabled =
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
                     isLongitudeReady && isLatitudeReady
             }
-            dialogLayout.latitudeEdit.setOnFocusChangeListener { v, hasFocus ->
+            dialogLayout.latitudeEdit.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
-                    dialog.getButton(Dialog.BUTTON_POSITIVE).isEnabled = false
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
                     return@setOnFocusChangeListener
                 }
                 val latitude = dialogLayout.latitudeEdit.text.toString().toDoubleOrNull()
@@ -261,7 +263,7 @@ class DialogKit {
                 } else {
                     isLatitudeReady = true
                 }
-                dialog.getButton(Dialog.BUTTON_POSITIVE).isEnabled =
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
                     isLongitudeReady && isLatitudeReady
             }
         }
@@ -306,7 +308,7 @@ class DialogKit {
                 dialogLayout.altitudeEdit.setText(mockTarget.altitude.toString())
             dialogLayout.accuracyEdit.setText(mockTarget.accuracy.toString())
 
-            val dialog = android.support.v7.app.AlertDialog.Builder(context)
+            val dialog = AlertDialog.Builder(context)
                 .setTitle(R.string.edit_mock_target_title)
                 .setView(dialogLayout)
                 .setPositiveButton(R.string.save) { _, _ ->
@@ -332,9 +334,9 @@ class DialogKit {
                 .show()
             var isLongitudeReady = true
             var isLatitudeReady = true
-            dialogLayout.longitudeEdit.setOnFocusChangeListener { v, hasFocus ->
+            dialogLayout.longitudeEdit.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
-                    dialog.getButton(Dialog.BUTTON_POSITIVE).isEnabled = false
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
                     return@setOnFocusChangeListener
                 }
                 val longitude = dialogLayout.longitudeEdit.text.toString().toDoubleOrNull()
@@ -346,12 +348,12 @@ class DialogKit {
                 } else {
                     isLongitudeReady = true
                 }
-                dialog.getButton(Dialog.BUTTON_POSITIVE).isEnabled =
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
                     isLongitudeReady && isLatitudeReady
             }
-            dialogLayout.latitudeEdit.setOnFocusChangeListener { v, hasFocus ->
+            dialogLayout.latitudeEdit.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
-                    dialog.getButton(Dialog.BUTTON_POSITIVE).isEnabled = false
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
                     return@setOnFocusChangeListener
                 }
                 val latitude = dialogLayout.latitudeEdit.text.toString().toDoubleOrNull()
@@ -363,9 +365,44 @@ class DialogKit {
                 } else {
                     isLatitudeReady = true
                 }
-                dialog.getButton(Dialog.BUTTON_POSITIVE).isEnabled =
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
                     isLongitudeReady && isLatitudeReady
             }
+        }
+
+        /**
+         * Show the import / export dialog.
+         *
+         * @param [context] The context
+         * @param [titleId] Resource ID of title
+         * @param [onSelected] Callback fired when the item is selected
+         *
+         * @author lucka-me
+         * @since 0.2.4
+         */
+        fun showImportExportMenu(
+            context: Context,
+            titleId: Int,
+            onSelected: ((fileType: DataKit.FileType) -> Unit)
+        ) {
+            val arrayAdapter =
+                ArrayAdapter<String>(context, R.layout.select_dialog_item_material)
+            arrayAdapter.addAll(
+                context.getString(DataKit.FileType.JSON.menuTitle),
+                context.getString(DataKit.FileType.GPX.menuTitle)
+            )
+            AlertDialog
+                .Builder(context)
+                .setTitle(titleId)
+                .setAdapter(arrayAdapter) { _, which ->
+                    val fileType = when (which) {
+                        DataKit.FileType.GPX.menuIndex -> DataKit.FileType.GPX
+                        DataKit.FileType.JSON.menuIndex -> DataKit.FileType.JSON
+                        else -> null
+                    } ?: return@setAdapter
+                    onSelected(fileType)
+                }
+                .show()
         }
     }
 }

@@ -3,13 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="labs.lucka.mlp.MainActivity">
     <item
+        android:id="@+id/menu_main_import"
+        android:orderInCategory="301"
+        android:title="@string/menu_main_import"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_main_export"
+        android:orderInCategory="302"
+        android:title="@string/menu_main_export"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/menu_main_preference"
-        android:orderInCategory="100"
+        android:orderInCategory="901"
         android:title="@string/menu_main_preference"
         app:showAsAction="never" />
     <item
         android:id="@+id/menu_main_about"
-        android:orderInCategory="200"
+        android:orderInCategory="902"
         android:title="@string/menu_main_about"
         app:showAsAction="never" />
 </menu>
