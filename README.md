@@ -1,6 +1,6 @@
 <h1 align=center><a href="#"><img src="./Resource/Banner.svg" alt="Banner"></a></h1>
 <p align=center>
-    <a href="./CHANGELOG.md"><img alt="Version 0.2.4" src="https://img.shields.io/badge/version-0.2.4-orange.svg"/></a>
+    <a href="./CHANGELOG.md"><img alt="Version 0.2.5" src="https://img.shields.io/badge/version-0.2.5-orange.svg"/></a>
     <a href="https://www.android.com/versions/lollipop-5-0/"><img alt="API Level 21" src="https://img.shields.io/badge/API_Level-21-A4C639.svg"/></a>
 </p>
 
@@ -49,6 +49,7 @@ I'm not sure if I'll develop it in the future, but since there are so many known
   - [x] `0.2.3` Swipe left to delete card
   - [ ] Re-order the cards by drag and drop
   - [x] `0.2.3` Long press / swipe right to check details / edit
+  - [ ] Option to enable / disable Deletion Confirmation
 - [ ] Service Noification:
   - [ ] Current target
 - [x] `0.1.2` Document the code

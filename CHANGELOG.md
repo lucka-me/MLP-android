@@ -3,7 +3,17 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
-## [0.2.3] - 2018-09-04
+## [0.2.5] - 2018-09-04
+- 0.2.4(200) -> 0.2.5(202)
+- Bugs fixed
+
+### Fixed
+- Export Enabled Targets Only option works oppositely
+- Imported targets displayed in wrong cards
+```
+
+```markdown
+## [0.2.4] - 2018-09-04
 - 0.2.3(188) -> 0.2.4(200)
 - New feature: Import / export
 

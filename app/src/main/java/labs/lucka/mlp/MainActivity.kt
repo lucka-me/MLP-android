@@ -228,7 +228,7 @@ class MainActivity : AppCompatActivity() {
                         if (newList.isNotEmpty()) {
                             mockTargetList.addAll(newList)
                             mainRecyclerViewAdapter.notifyItemRangeInserted(
-                                mockTargetList.size - 1 - newList.size, newList.size
+                                mockTargetList.size - newList.size, newList.size
                             )
                             DataKit.saveData(this, mockTargetList)
                             Snackbar.make(
@@ -257,10 +257,10 @@ class MainActivity : AppCompatActivity() {
                     if (defaultSharedPreferences.getBoolean(
                             getString(R.string.pref_ie_export_enabled_only_key), false
                         )) {
-                        exportTargetList = mockTargetList
-                    } else {
                         for (target in mockTargetList)
                             if (target.enabled) exportTargetList.add(target)
+                    } else {
+                        exportTargetList = mockTargetList
                     }
                     try {
                         DataKit.writeFile(
