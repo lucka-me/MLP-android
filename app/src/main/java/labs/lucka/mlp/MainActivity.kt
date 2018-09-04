@@ -54,6 +54,14 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
+            override fun onEditAt(position: Int) {
+                DialogKit.showEditMockTargetDialog(
+                    this@MainActivity, mockTargetList, position
+                ) {
+                    mainRecyclerViewAdapter.notifyItemChanged(position)
+                }
+            }
+
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,24 +81,17 @@ class MainActivity : AppCompatActivity() {
         mainRecyclerView.layoutManager = LinearLayoutManager(this)
         mainRecyclerView.adapter = mainRecyclerViewAdapter
         mainRecyclerView.isNestedScrollingEnabled = false
+        mainRecyclerViewAdapter.attachItemTouchHelperTo(mainRecyclerView)
 
         fabAddMockTarget.setOnClickListener { _ ->
-            DialogKit.showAddMockTargetDialog(
-                this,
-                mockTargetList,
-                {
-                    Snackbar
-                        .make(mainRecyclerView, R.string.err_coordinate_wrong, Snackbar.LENGTH_LONG)
-                        .show()
-                },
-                {
-                    mainRecyclerViewAdapter.notifyAddMockTarget()
-                    Snackbar.make(
-                        nestedScrollView,
-                        R.string.add_mock_target_success,
-                        Snackbar.LENGTH_LONG
-                    ).show()
-                })
+            DialogKit.showAddMockTargetDialog(this, mockTargetList) {
+                mainRecyclerViewAdapter.notifyAddMockTarget()
+                Snackbar.make(
+                    nestedScrollView,
+                    R.string.add_mock_target_success,
+                    Snackbar.LENGTH_LONG
+                ).show()
+            }
         }
 
         nestedScrollView.setOnScrollChangeListener(

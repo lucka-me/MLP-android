@@ -1,6 +1,6 @@
 <h1 align=center><a href="#"><img src="./Resource/Banner.svg" alt="Banner"></a></h1>
 <p align=center>
-    <a href="./CHANGELOG.md"><img alt="Version 0.2.2" src="https://img.shields.io/badge/version-0.2.2-orange.svg"/></a>
+    <a href="./CHANGELOG.md"><img alt="Version 0.2.3" src="https://img.shields.io/badge/version-0.2.3-orange.svg"/></a>
     <a href="https://www.android.com/versions/lollipop-5-0/"><img alt="API Level 21" src="https://img.shields.io/badge/API_Level-21-A4C639.svg"/></a>
 </p>
 
@@ -15,10 +15,10 @@ Please follow the steps carefully, otherwise MLP may crash.
 
 1. Install MLP.
 2. Open the ***Developer Options***, turn on the ***Enable mock location***, and select MLP in the ***Select mock location app*** if the option exists.
-3. Launch MLP, tap the add fab beside the title, enter the longitude and latitude in degree, then add Title, altitude and accuracy if you want.
-4. Tap the card to enable or disable the target
-5. Long press the card to delete the target
-6. Tap the start fab in the right bottom to start MLP foreground service
+3. Launch MLP, tap the add fab beside the title, enter the longitude and latitude in degree, then add title, altitude and accuracy if you want.
+4. Tap the card to enable or disable the target.
+5. Swipe the card to left to delete the target, long press or swipe to right to edit.
+6. Tap the start fab in the right bottom to start MLP foreground service.
 7. Now, the foreground service will send the enabled target(s) one by one and circularly, with interval of 5 seconds. The location will be sent to `GPS_PROVODER` and / or `NETWORK_PROVODER` (Could be configured in Preference screen).
 8. Tap the stop fab to stop the service.
 
@@ -45,9 +45,9 @@ I'm not sure if I'll develop it in the future, but since there are so many known
   - [x] `0.1.4` Enable NETWORK_PROVODER
   - [ ] Enable a custom provider
 - [ ] UI improvement
-  - [ ] Swipe to delete card
+  - [x] `0.2.3` Swipe left to delete card
   - [ ] Re-order the cards by drag and drop
-  - [ ] Long press to check details / edit
+  - [x] `0.2.3` Long press / swipe right to check details / edit
 - [ ] Service Noification:
   - [ ] Current target
 - [x] `0.1.2` Document the code

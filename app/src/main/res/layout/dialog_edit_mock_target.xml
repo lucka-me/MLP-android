@@ -54,7 +54,7 @@
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="8dp"
                         android:ems="10"
-                        android:inputType="numberDecimal"
+                        android:inputType="numberSigned|numberDecimal"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/longitudeTitle">
@@ -82,7 +82,7 @@
                         android:layout_marginStart="24dp"
                         android:layout_marginTop="8dp"
                         android:ems="10"
-                        android:inputType="numberDecimal"
+                        android:inputType="numberSigned|numberDecimal"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/latitudeTitle" />

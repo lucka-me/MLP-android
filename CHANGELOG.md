@@ -3,6 +3,20 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.2.3] - 2018-09-04
+- 0.2.2(172) -> 0.2.3(188)
+- New feature: Swipe to delete or edit
+
+### Added
+- Swipe left to delete
+- Long press or swipe right to edit with Edit Mock Target Dialog
+
+### Changed
+- In Add Mock Target Dialog, check value immediately after input and the add
+  button will enabled only when both values are valid and not being edited
+```
+
+```markdown
 ## [0.2.2] - 2018-09-03
 - 0.2.1(156) -> 0.2.2(172)
 - New feature: AddMockTargetDialog with tabs

@@ -3,6 +3,7 @@ package labs.lucka.mlp
 import android.content.Context
 import android.location.Location
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,14 @@ import android.widget.TextView
 
 /**
  * Adapter for mainRecyclerView.
+ *
+ * ## Changelog
+ * ### 0.2.3
+ * - Long press to delete -> swipe left to delete
+ *
+ * ## Private Attributes
+ * - [onItemClickListener]
+ * - [itemTouchHelper]
  *
  * ## Nested Classes
  * - [MainRecyclerViewListener]
@@ -23,6 +32,7 @@ import android.widget.TextView
  * - [onBindViewHolder]
  * - [getItemCount]
  * ### Public
+ * - [attachItemTouchHelperTo]
  * - [notifyAddMockTarget]
  * - [notifyRemoveMockTarget]
  *
@@ -30,11 +40,13 @@ import android.widget.TextView
  * @param [mockTargetList] ArrayList for mock targets from [MainActivity]
  * @param [mainRecyclerViewListener] Message listener from [MainActivity]
  *
+ * @see <a href="https://medium.com/@kitek/recyclerview-swipe-to-delete-easier-than-you-thought-cff67ff5e5f6">RecyclerView swipe to delete easier than you thought | Medium</a>
+ *
  * @author lucka-me
  * @since 0.1
  *
  * @property [onItemClickListener] Listener for click event on cards
- *
+ * @property [itemTouchHelper] Used to handle swipe
  */
 class MainRecyclerViewAdapter(
     private val context: Context,
@@ -50,27 +62,75 @@ class MainRecyclerViewAdapter(
         }
 
         override fun onLongClickAt(position: Int) {
-            DialogKit.showDialog(
-                context,
-                R.string.delete_mock_target_confirm_title,
-                String.format(
-                    context.getString(R.string.delete_mock_target_confirm_message),
-                    Location.convert(mockTargetList[position].longitude, Location.FORMAT_SECONDS),
-                    Location.convert(mockTargetList[position].latitude, Location.FORMAT_SECONDS)
-                ),
-                positiveButtonListener = { _, _ ->
-                    mockTargetList.removeAt(position)
-                    notifyRemoveMockTarget(position)
-                    mainRecyclerViewListener.onRemovedAt(position)
-                },
-                negativeButtonTextId = R.string.cancel,
-                cancelable = false
-            )
+            mainRecyclerViewListener.onEditAt(position)
         }
     }
 
+    private val itemTouchHelper: ItemTouchHelper = ItemTouchHelper(
+        object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.ACTION_STATE_IDLE,
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView?,
+                viewHolder: RecyclerView.ViewHolder?,
+                target: RecyclerView.ViewHolder?
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int) {
+                if (viewHolder == null) return
+                val position = viewHolder.adapterPosition
+                when (direction) {
+
+                    ItemTouchHelper.LEFT -> {
+                        DialogKit.showDialog(
+                            context,
+                            R.string.delete_mock_target_confirm_title,
+                            String.format(
+                                context.getString(R.string.delete_mock_target_confirm_message),
+                                mockTargetList[position].title,
+                                Location.convert(
+                                    mockTargetList[position].longitude,
+                                    Location.FORMAT_SECONDS
+                                ),
+                                Location.convert(
+                                    mockTargetList[position].latitude,
+                                    Location.FORMAT_SECONDS
+                                )
+                            ),
+                            positiveButtonListener = { _, _ ->
+                                mockTargetList.removeAt(position)
+                                notifyRemoveMockTarget(position)
+                                mainRecyclerViewListener.onRemovedAt(position)
+                            },
+                            negativeButtonTextId = R.string.cancel,
+                            negativeButtonListener = { _, _ ->
+                                notifyItemChanged(position)
+                            },
+                            cancelable = false
+                        )
+                    }
+
+                    ItemTouchHelper.RIGHT -> {
+                        notifyItemChanged(position)
+                        mainRecyclerViewListener.onEditAt(position)
+                    }
+
+                }
+
+            }
+        }
+    )
+
+
     /**
      * Interface used to receive message from [MainRecyclerViewListener].
+     *
+     * ## Public Methods
+     * - [onRemovedAt]
+     * - [onEditAt]
      *
      * @author lucka-me
      * @since 0.1
@@ -85,11 +145,25 @@ class MainRecyclerViewAdapter(
          * @since 0.1
          */
         fun onRemovedAt(position: Int)
+
+        /**
+         * Called when long pressed or swiped to right
+         *
+         * @param [position] Position of the card (target)
+         *
+         * @author lucka-me
+         * @since 0.1
+         */
+        fun onEditAt(position: Int)
     }
 
     /**
      * Interface to receive message of click event on items (cards), with the position of the
      * clicked card.
+     *
+     * ## Public Methods
+     * - [onClickAt]
+     * - [onLongClickAt]
      *
      * @author lucka-me
      * @since 0.1.1
@@ -188,6 +262,16 @@ class MainRecyclerViewAdapter(
 
     override fun getItemCount(): Int {
         return mockTargetList.size
+    }
+
+    /**
+     * Attach [itemTouchHelper] to the recycler view
+     *
+     * @author lucka-me
+     * @since 0.2.3
+     */
+    fun attachItemTouchHelperTo(recyclerView: RecyclerView?) {
+        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
     /**
