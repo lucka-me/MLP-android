@@ -91,8 +91,13 @@ class MainActivity : AppCompatActivity() {
 
             override fun onEditAt(position: Int) {
                 DialogKit.showEditMockTargetDialog(
-                    this@MainActivity, mockTargetList, position
+                    this@MainActivity, mockTargetList[position]
                 ) {
+                    try {
+                        DataKit.saveData(this@MainActivity, mockTargetList)
+                    } catch (error: Exception) {
+                        DialogKit.showSimpleAlert(this@MainActivity, error.message)
+                    }
                     mainRecyclerViewAdapter.notifyItemChanged(position)
                 }
             }
@@ -134,7 +139,13 @@ class MainActivity : AppCompatActivity() {
 
         // Setup fabs
         fabAddMockTarget.setOnClickListener { _ ->
-            DialogKit.showAddMockTargetDialog(this, mockTargetList) {
+            DialogKit.showAddMockTargetDialog(this) { newTarget ->
+                mockTargetList.add(newTarget)
+                try {
+                    DataKit.saveData(this, mockTargetList)
+                } catch (error: Exception) {
+                    DialogKit.showSimpleAlert(this, error.message)
+                }
                 mainRecyclerViewAdapter.notifyAddMockTarget()
                 Snackbar.make(
                     nestedScrollView,
@@ -198,7 +209,7 @@ class MainActivity : AppCompatActivity() {
 
         when(item.itemId) {
             R.id.menu_main_import -> {
-                DialogKit.showImportExportMenu(this, R.string.import_title) { fileType ->
+                DialogKit.showImportExportMenuDialog(this, R.string.import_title) { fileType ->
                     startActivityForResult(
                         Intent(Intent.ACTION_GET_CONTENT)
                             .addCategory(Intent.CATEGORY_OPENABLE)
@@ -208,7 +219,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             R.id.menu_main_export -> {
-                DialogKit.showImportExportMenu(this, R.string.export_title) { fileType ->
+                DialogKit.showImportExportMenuDialog(this, R.string.export_title) { fileType ->
                     startActivityForResult(
                         Intent(Intent.ACTION_CREATE_DOCUMENT)
                             .addCategory(Intent.CATEGORY_OPENABLE)

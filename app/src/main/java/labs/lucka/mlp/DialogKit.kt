@@ -8,7 +8,8 @@ import android.provider.Settings
 import android.support.v7.app.AlertDialog
 import android.view.View
 import android.widget.ArrayAdapter
-import kotlinx.android.synthetic.main.dialog_edit_mock_target.view.*
+import android.widget.EditText
+import android.widget.TabHost
 
 /**
  * Display dialogs in a bit better way.
@@ -16,7 +17,12 @@ import kotlinx.android.synthetic.main.dialog_edit_mock_target.view.*
  * ## Public Methods
  * - [showDialog]
  * - [showSimpleAlert]
- * - [showImportExportMenu]
+ * - [showDeveloperOptionsDialog]
+ * - [showAddMockTargetDialog]
+ * - [showEditMockTargetDialog]
+ * - [showImportExportMenuDialog]
+ * - [showAddProviderDialog]
+ * - [showEditProviderDialog]
  *
  * @author lucka-me
  * @since 0.1
@@ -175,10 +181,11 @@ class DialogKit {
          * ### 0.2.3
          * - Check value immediately after input
          * - Add button enable only when longitude and latitude are both valid and not being edited
+         * ### 0.2.7
+         * - Call [onAddClickListener] instead of process adding to list and saving
          *
          * @param [context] The context
-         * @param [mockTargetList] The mock target list
-         * @param [onAdded] Callback fired when the new mock target added to [mockTargetList]
+         * @param [onAddClickListener] Callback fired when the add button is clicked
          *
          * @author lucka-me
          * @since 0.1
@@ -187,11 +194,10 @@ class DialogKit {
          */
         fun showAddMockTargetDialog(
             context: Context,
-            mockTargetList: ArrayList<MockTarget>,
-            onAdded: (() -> (Unit))
+            onAddClickListener: ((newTarget: MockTarget) -> (Unit))
         ) {
             val dialogLayout = View.inflate(context, R.layout.dialog_edit_mock_target, null)
-            val tabHost = dialogLayout.tabHost
+            val tabHost: TabHost = dialogLayout.findViewById(R.id.tabHost)
             tabHost.setup()
             tabHost.addTab(
                 tabHost
@@ -205,66 +211,63 @@ class DialogKit {
                     .setContent(R.id.tab_advanced)
                     .setIndicator(context.getString(R.string.tab_advanced_title))
             )
+            val longitudeEdit: EditText = dialogLayout.findViewById(R.id.longitudeEdit)
+            val latitudeEdit: EditText = dialogLayout.findViewById(R.id.latitudeEdit)
 
             val dialog = AlertDialog.Builder(context)
                 .setTitle(R.string.add_mock_target_title)
                 .setView(dialogLayout)
                 .setPositiveButton(R.string.add) { _, _ ->
-                    val longitude = dialogLayout.longitudeEdit.text.toString().toDouble()
-                    val latitude = dialogLayout.latitudeEdit.text.toString().toDouble()
-                    val title = dialogLayout.titleEdit.text.toString()
-                    val altitude = dialogLayout.altitudeEdit.text.toString().toDoubleOrNull()
-                    val accuracy = dialogLayout.accuracyEdit.text.toString().toFloatOrNull()
-                    mockTargetList.add(MockTarget(
+                    val longitude = longitudeEdit.text.toString().toDouble()
+                    val latitude = latitudeEdit.text.toString().toDouble()
+                    val title = dialogLayout.findViewById<EditText>(R.id.titleEdit).text.toString()
+                    val altitude = dialogLayout.findViewById<EditText>(R.id.altitudeEdit).text
+                        .toString().toDoubleOrNull()
+                    val accuracy = dialogLayout.findViewById<EditText>(R.id.accuracyEdit).text
+                        .toString().toFloatOrNull()
+                    onAddClickListener(MockTarget(
                         longitude, latitude, title = title,
                         altitude = altitude, accuracy = accuracy ?: 5.0F
                     ))
-                    try {
-                        DataKit.saveData(context, mockTargetList)
-                    } catch (error: Exception) {
-                        DialogKit.showSimpleAlert(context, error.message)
-                    }
-                    onAdded()
                 }
                 .setNegativeButton(R.string.cancel, null)
                 .setCancelable(false)
                 .show()
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+            val addButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            addButton.isEnabled = false
             var isLongitudeReady = false
             var isLatitudeReady = false
-            dialogLayout.longitudeEdit.setOnFocusChangeListener { _, hasFocus ->
+            longitudeEdit.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+                    addButton.isEnabled = false
                     return@setOnFocusChangeListener
                 }
-                val longitude = dialogLayout.longitudeEdit.text.toString().toDoubleOrNull()
+                val longitude = longitudeEdit.text.toString().toDoubleOrNull()
                 if (longitude == null) {
                     isLongitudeReady = false
                 } else if (longitude < -180 || longitude > 180) {
                     isLongitudeReady = false
-                    dialogLayout.longitudeEdit.text.clear()
+                    longitudeEdit.text.clear()
                 } else {
                     isLongitudeReady = true
                 }
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
-                    isLongitudeReady && isLatitudeReady
+                addButton.isEnabled = isLongitudeReady && isLatitudeReady
             }
-            dialogLayout.latitudeEdit.setOnFocusChangeListener { _, hasFocus ->
+            latitudeEdit.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+                    addButton.isEnabled = false
                     return@setOnFocusChangeListener
                 }
-                val latitude = dialogLayout.latitudeEdit.text.toString().toDoubleOrNull()
+                val latitude = latitudeEdit.text.toString().toDoubleOrNull()
                 if (latitude == null) {
                     isLatitudeReady = false
                 } else if (latitude < -90 || latitude > 90) {
                     isLatitudeReady = false
-                    dialogLayout.latitudeEdit.text.clear()
+                    latitudeEdit.text.clear()
                 } else {
                     isLatitudeReady = true
                 }
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
-                    isLongitudeReady && isLatitudeReady
+                addButton.isEnabled = isLongitudeReady && isLatitudeReady
             }
         }
 
@@ -272,7 +275,7 @@ class DialogKit {
          * Show a dialog to edit a mock target.
          *
          * @param [context] The context
-         * @param [mockTargetList] The mock target list
+         * @param [mockTarget] The mock target to be edit
          * @param [onEdited] Callback fired when the new mock target edited and saved
          *
          * @author lucka-me
@@ -280,13 +283,11 @@ class DialogKit {
          */
         fun showEditMockTargetDialog(
             context: Context,
-            mockTargetList: ArrayList<MockTarget>,
-            index: Int,
+            mockTarget: MockTarget,
             onEdited: (() -> (Unit))
         ) {
-            val mockTarget = mockTargetList[index]
             val dialogLayout = View.inflate(context, R.layout.dialog_edit_mock_target, null)
-            val tabHost = dialogLayout.tabHost
+            val tabHost: TabHost = dialogLayout.findViewById(R.id.tabHost)
             tabHost.setup()
             tabHost.addTab(
                 tabHost
@@ -301,32 +302,32 @@ class DialogKit {
                     .setIndicator(context.getString(R.string.tab_advanced_title))
             )
 
-            dialogLayout.longitudeEdit.setText(mockTarget.longitude.toString())
-            dialogLayout.latitudeEdit.setText(mockTarget.latitude.toString())
-            dialogLayout.titleEdit.setText(mockTarget.title)
+            val longitudeEdit: EditText = dialogLayout.findViewById(R.id.longitudeEdit)
+            val latitudeEdit: EditText = dialogLayout.findViewById(R.id.latitudeEdit)
+            val titleEdit: EditText = dialogLayout.findViewById(R.id.titleEdit)
+            val altitudeEdit: EditText = dialogLayout.findViewById(R.id.altitudeEdit)
+            val accuracyEdit: EditText = dialogLayout.findViewById(R.id.accuracyEdit)
+            longitudeEdit.setText(mockTarget.longitude.toString())
+            latitudeEdit.setText(mockTarget.latitude.toString())
+            titleEdit.setText(mockTarget.title)
             if (mockTarget.altitude != null)
-                dialogLayout.altitudeEdit.setText(mockTarget.altitude.toString())
-            dialogLayout.accuracyEdit.setText(mockTarget.accuracy.toString())
+                altitudeEdit.setText(mockTarget.altitude.toString())
+            accuracyEdit.setText(mockTarget.accuracy.toString())
 
             val dialog = AlertDialog.Builder(context)
                 .setTitle(R.string.edit_mock_target_title)
                 .setView(dialogLayout)
                 .setPositiveButton(R.string.save) { _, _ ->
-                    val longitude = dialogLayout.longitudeEdit.text.toString().toDouble()
-                    val latitude = dialogLayout.latitudeEdit.text.toString().toDouble()
-                    val title = dialogLayout.titleEdit.text.toString()
-                    val altitude = dialogLayout.altitudeEdit.text.toString().toDoubleOrNull()
-                    val accuracy = dialogLayout.accuracyEdit.text.toString().toFloatOrNull()
+                    val longitude = longitudeEdit.text.toString().toDouble()
+                    val latitude = latitudeEdit.text.toString().toDouble()
+                    val title = titleEdit.text.toString()
+                    val altitude = altitudeEdit.text.toString().toDoubleOrNull()
+                    val accuracy = accuracyEdit.text.toString().toFloatOrNull()
                     mockTarget.longitude = longitude
                     mockTarget.latitude = latitude
                     mockTarget.title = title
                     mockTarget.altitude = altitude
                     mockTarget.accuracy = accuracy ?: 5.0F
-                    try {
-                        DataKit.saveData(context, mockTargetList)
-                    } catch (error: Exception) {
-                        DialogKit.showSimpleAlert(context, error.message)
-                    }
                     onEdited()
                 }
                 .setNegativeButton(R.string.cancel, null)
@@ -334,34 +335,34 @@ class DialogKit {
                 .show()
             var isLongitudeReady = true
             var isLatitudeReady = true
-            dialogLayout.longitudeEdit.setOnFocusChangeListener { _, hasFocus ->
+            longitudeEdit.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
                     return@setOnFocusChangeListener
                 }
-                val longitude = dialogLayout.longitudeEdit.text.toString().toDoubleOrNull()
+                val longitude = longitudeEdit.text.toString().toDoubleOrNull()
                 if (longitude == null) {
                     isLongitudeReady = false
                 } else if (longitude < -180 || longitude > 180) {
                     isLongitudeReady = false
-                    dialogLayout.longitudeEdit.text.clear()
+                    longitudeEdit.text.clear()
                 } else {
                     isLongitudeReady = true
                 }
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
                     isLongitudeReady && isLatitudeReady
             }
-            dialogLayout.latitudeEdit.setOnFocusChangeListener { _, hasFocus ->
+            latitudeEdit.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
                     return@setOnFocusChangeListener
                 }
-                val latitude = dialogLayout.latitudeEdit.text.toString().toDoubleOrNull()
+                val latitude = latitudeEdit.text.toString().toDoubleOrNull()
                 if (latitude == null) {
                     isLatitudeReady = false
                 } else if (latitude < -90 || latitude > 90) {
                     isLatitudeReady = false
-                    dialogLayout.latitudeEdit.text.clear()
+                    latitudeEdit.text.clear()
                 } else {
                     isLatitudeReady = true
                 }
@@ -380,7 +381,7 @@ class DialogKit {
          * @author lucka-me
          * @since 0.2.4
          */
-        fun showImportExportMenu(
+        fun showImportExportMenuDialog(
             context: Context,
             titleId: Int,
             onSelected: ((fileType: DataKit.FileType) -> Unit)
@@ -404,5 +405,72 @@ class DialogKit {
                 }
                 .show()
         }
+
+        /**
+         * Show add customized provider dialog.
+         *
+         * @param [context] The context
+         * @param [onAddClickListener] Callback fired when the add button clicked
+         *
+         * @author lucka-me
+         * @since 0.2.7
+         */
+        fun showAddProviderDialog(
+            context: Context, onAddClickListener: (provider: String) -> Unit
+        ) {
+            val dialogView = View.inflate(context, R.layout.edit_dialog_item, null)
+            val editText: EditText = dialogView.findViewById(R.id.editText)
+            val dialog =
+                AlertDialog
+                    .Builder(context)
+                    .setView(dialogView)
+                    .setTitle(R.string.customized_provider_add_title)
+                    .setPositiveButton(R.string.add) { _, _ ->
+                        onAddClickListener(editText.text.toString())
+                    }
+                    .setNegativeButton(R.string.cancel, null)
+                    .show()
+            val addButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            addButton.isEnabled = false
+            editText.setOnKeyListener { _, _, _ ->
+                addButton.isEnabled = !editText.text.isBlank()
+                return@setOnKeyListener true
+            }
+        }
+
+        /**
+         * Show add customized provider dialog.
+         *
+         * @param [context] The context
+         * @param [provider] The provider to be edited
+         * @param [onEdited] Callback fired when the confirm button clicked
+         *
+         * @author lucka-me
+         * @since 0.2.7
+         */
+        fun showEditProviderDialog(
+            context: Context, provider: String, onEdited: (provider: String) -> Unit
+        ) {
+            val dialogView = View.inflate(context, R.layout.edit_dialog_item, null)
+            val editText: EditText = dialogView.findViewById(R.id.editText)
+            editText.setText(provider)
+            val dialog =
+                AlertDialog
+                    .Builder(context)
+                    .setView(dialogView)
+                    .setTitle(R.string.customized_provider_edit_title)
+                    .setPositiveButton(R.string.confirm) { _, _ ->
+                        onEdited(editText.text.toString())
+                    }
+                    .setNegativeButton(R.string.cancel, null)
+                    .show()
+            val confirmButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            confirmButton.isEnabled = false
+            editText.setOnKeyListener { _, _, _ ->
+                confirmButton.isEnabled = !editText.text.isBlank()
+                return@setOnKeyListener true
+            }
+        }
+
     }
 }

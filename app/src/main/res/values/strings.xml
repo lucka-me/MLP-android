@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">M.L.P.</string>
     <string name="app_name_full">Mock Location Provider</string>
+    <string name="package_name">labs.lucka.mlp</string>
     <string name="data_filename">mlp_target.json</string>
     <string name="test_location_provider">mlp_test</string>
 

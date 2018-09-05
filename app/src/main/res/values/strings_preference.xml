@@ -9,6 +9,20 @@
     <string name="pref_provider_network_key">pref_provider_network</string>
     <string name="pref_provider_network_title">Mock Network Provider</string>
     <string name="pref_provider_network_summary">Send mock location to NETWORK_PROVIDER</string>
+    <string name="pref_provider_customized_enable_key">pref_provider_customized_enable</string>
+    <string name="pref_provider_customized_enable_title">Mock Customized Provider</string>
+    <string name="pref_provider_customized_enable_summary">Send mock location to customized provider(s)</string>
+    <string name="pref_provider_customized_manage_key">pref_provider_customized_manage</string>
+    <string name="pref_provider_customized_manage_title">Manage Customized Provider</string>
+    <string name="pref_provider_customized_list_key">pref_provider_customized_list</string>
+    <!-- Customized Provider Activity -->
+    <string name="customized_provider_title">Customized Provider</string>
+    <string name="customized_provider_class_name">labs.lucka.mlp.CustomizedProviderActivity</string>
+    <string name="menu_customized_provider_add">Add</string>
+    <string name="menu_customized_provider_save">Save</string>
+    <string name="customized_provider_add_title">Add a New Provider</string>
+    <string name="customized_provider_edit_title">Edit Provider</string>
+    <string name="customized_provider_removed">Provider removed.</string>
 
     <string name="pref_ie_category_title">Import / Export</string>
     <string name="pref_ie_export_enabled_only_key">pref_ie_export_enabled_only</string>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_customized_provider_add"
+        android:icon="@drawable/ic_add"
+        android:title="@string/menu_customized_provider_add"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/menu_customized_provider_save"
+        android:icon="@drawable/ic_check"
+        android:title="@string/menu_customized_provider_save"
+        app:showAsAction="always"/>
+</menu>

@@ -15,6 +15,18 @@
             android:title="@string/pref_provider_network_title"
             android:summary="@string/pref_provider_network_summary"
             android:defaultValue="true" />
+        <SwitchPreference
+            android:key="@string/pref_provider_customized_enable_key"
+            android:title="@string/pref_provider_customized_enable_title"
+            android:summary="@string/pref_provider_customized_enable_summary"
+            android:defaultValue="false" />
+        <Preference
+            android:title="@string/pref_provider_customized_manage_title" >
+            <intent
+                android:action="android.intent.action.MAIN"
+                android:targetPackage="@string/package_name"
+                android:targetClass="@string/customized_provider_class_name" />
+        </Preference>
 
     </PreferenceCategory>
 

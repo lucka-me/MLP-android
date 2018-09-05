@@ -22,6 +22,8 @@ import kotlin.collections.ArrayList
  * - Send mock location to the providers enabled in preference
  * ### 0.2
  * - Migrated [isServiceOnline] and [isMockLocationEnabled] from [MainActivity]
+ * ### 0.2.7
+ * - Support customized provider
  *
  * ## Attributes
  * ### Private
@@ -131,6 +133,14 @@ class MockLocationProviderService : Service() {
                 .getBoolean(getString(R.string.pref_provider_network_key), true)
         ) {
             targetProviderList.add(LocationManager.NETWORK_PROVIDER)
+        }
+        if (defaultSharedPreferences
+                .getBoolean(getString(R.string.pref_provider_customized_enable_key), false)
+        ) {
+            targetProviderList
+                .addAll(defaultSharedPreferences.getStringSet(
+                    getString(R.string.pref_provider_customized_list_key), setOf()
+                ))
         }
 
         // Setup location manager

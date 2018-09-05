@@ -1,6 +1,6 @@
 <h1 align=center><a href="#"><img src="./Resource/Banner.svg" alt="Banner"></a></h1>
 <p align=center>
-    <a href="./CHANGELOG.md"><img alt="Version 0.2.6" src="https://img.shields.io/badge/version-0.2.6-orange.svg"/></a>
+    <a href="./CHANGELOG.md"><img alt="Version 0.2.7" src="https://img.shields.io/badge/version-0.2.7-orange.svg"/></a>
     <a href="https://www.android.com/versions/lollipop-5-0/"><img alt="API Level 21" src="https://img.shields.io/badge/API_Level-21-A4C639.svg"/></a>
 </p>
 

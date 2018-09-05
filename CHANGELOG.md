@@ -3,6 +3,20 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.2.7] - 2018-09-05
+- 0.2.6(210) -> 0.2.7(231)
+- New function: Customizing providers
+
+### Added
+- Option: Mock Customized Provider
+- Screen: Customized Provider, to manage the customized providers
+
+### Changed
+- Add license to select_dialog_item_material.xml, which is from android
+- Methods of DialogKit minor modified
+```
+
+```markdown
 ## [0.2.6] - 2018-09-05
 - 0.2.5(202) -> 0.2.6(210)
 - New option: Confirm to Delete

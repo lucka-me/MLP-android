@@ -186,7 +186,7 @@ class MainRecyclerViewAdapter(
          *
          * ## Changelog
          * ### 0.2.6
-         *
+         * - Add [removedTarget] for undo
          *
          * @param [position] The position of removed target
          * @param [removedTarget] Removed target

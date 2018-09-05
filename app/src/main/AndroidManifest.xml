@@ -35,6 +35,12 @@
             android:parentActivityName=".MainActivity"/>
 
         <activity
+            android:name=".CustomizedProviderActivity"
+            android:label="@string/customized_provider_title"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".PreferenceMainActivity"/>
+
+        <activity
             android:name=".PreferenceAboutActivity"
             android:label="@string/about_title"
             android:screenOrientation="portrait"
