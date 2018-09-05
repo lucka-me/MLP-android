@@ -59,12 +59,34 @@ class MainActivity : AppCompatActivity() {
     private val mainRecyclerViewListener: MainRecyclerViewAdapter.MainRecyclerViewListener =
         object : MainRecyclerViewAdapter.MainRecyclerViewListener {
 
-            override fun onRemovedAt(position: Int) {
+            override fun onRemovedAt(position: Int, removedTarget: MockTarget) {
                 try {
                     DataKit.saveData(this@MainActivity, mockTargetList)
                 } catch (error: Exception) {
                     DialogKit.showSimpleAlert(this@MainActivity, error.message)
                 }
+                if (!defaultSharedPreferences.getBoolean(
+                        getString(R.string.pref_edit_confirm_delete_key),
+                        true
+                    )) {
+                    Snackbar
+                        .make(
+                            nestedScrollView,
+                            R.string.target_removed,
+                            Snackbar.LENGTH_LONG
+                        )
+                        .setAction(R.string.undo) {
+                            mockTargetList.add(position, removedTarget)
+                            mainRecyclerViewAdapter.notifyItemInserted(position)
+                            try {
+                                DataKit.saveData(this@MainActivity, mockTargetList)
+                            } catch (error: Exception) {
+                                DialogKit.showSimpleAlert(this@MainActivity, error.message)
+                            }
+                        }
+                        .show()
+                }
+
             }
 
             override fun onEditAt(position: Int) {

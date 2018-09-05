@@ -3,6 +3,17 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.2.6] - 2018-09-05
+- 0.2.5(202) -> 0.2.6(210)
+- New option: Confirm to Delete
+
+### Added
+- Confirm to Delete option, a snack bar with UNDO action will show up after
+  deleting if the option is off
+- Edit and remove icon under cards
+```
+
+```markdown
 ## [0.2.5] - 2018-09-04
 - 0.2.4(200) -> 0.2.5(202)
 - Bugs fixed

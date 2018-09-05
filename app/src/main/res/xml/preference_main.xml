@@ -29,4 +29,15 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="@string/pref_edit_category_title" >
+
+        <SwitchPreference
+            android:key="@string/pref_edit_confirm_delete_key"
+            android:title="@string/pref_edit_confirm_delete_title"
+            android:summary="@string/pref_edit_confirm_delete_summary"
+            android:defaultValue="true"/>
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

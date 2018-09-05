@@ -50,6 +50,10 @@
     <string name="example_coordinate">000:00:00.00000</string>
     <string name="target_title_default">Target %d</string>
 
+    <!-- Snack bar -->
+    <string name="undo">Undo</string>
+    <string name="target_removed">Target removed.</string>
+
     <!-- Service -->
     <string name="pref_is_service_online_key">pref_is_service_online</string>
     <string name="service_description">M.L.P. Service</string>

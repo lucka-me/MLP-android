@@ -14,4 +14,9 @@
     <string name="pref_ie_export_enabled_only_key">pref_ie_export_enabled_only</string>
     <string name="pref_ie_export_enabled_only_title">Export Enabled Targets Only</string>
     <string name="pref_ie_export_enabled_only_summary">Only enabled mock targets will be exported</string>
+
+    <string name="pref_edit_category_title">Edit</string>
+    <string name="pref_edit_confirm_delete_key">pref_edit_confirm_delete</string>
+    <string name="pref_edit_confirm_delete_title">Confirm to Delete</string>
+    <string name="pref_edit_confirm_delete_summary">Confirm before deleting a target</string>
 </resources>

@@ -1,7 +1,9 @@
 package labs.lucka.mlp
 
 import android.content.Context
+import android.graphics.Canvas
 import android.location.Location
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
@@ -9,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
+import org.jetbrains.anko.defaultSharedPreferences
 
 /**
  * Adapter for mainRecyclerView.
@@ -34,7 +37,6 @@ import android.widget.TextView
  * ### Public
  * - [attachItemTouchHelperTo]
  * - [notifyAddMockTarget]
- * - [notifyRemoveMockTarget]
  *
  * @param [context] The context
  * @param [mockTargetList] ArrayList for mock targets from [MainActivity]
@@ -85,32 +87,43 @@ class MainRecyclerViewAdapter(
                 when (direction) {
 
                     ItemTouchHelper.LEFT -> {
-                        DialogKit.showDialog(
-                            context,
-                            R.string.delete_mock_target_confirm_title,
-                            String.format(
-                                context.getString(R.string.delete_mock_target_confirm_message),
-                                mockTargetList[position].title,
-                                Location.convert(
-                                    mockTargetList[position].longitude,
-                                    Location.FORMAT_SECONDS
+                        val removedTarget = mockTargetList[position]
+                        if (context.defaultSharedPreferences.getBoolean(
+                                context.getString(R.string.pref_edit_confirm_delete_key),
+                                true
+                            )) {
+                            DialogKit.showDialog(
+                                context,
+                                R.string.delete_mock_target_confirm_title,
+                                String.format(
+                                    context.getString(R.string.delete_mock_target_confirm_message),
+                                    mockTargetList[position].title,
+                                    Location.convert(
+                                        mockTargetList[position].longitude,
+                                        Location.FORMAT_SECONDS
+                                    ),
+                                    Location.convert(
+                                        mockTargetList[position].latitude,
+                                        Location.FORMAT_SECONDS
+                                    )
                                 ),
-                                Location.convert(
-                                    mockTargetList[position].latitude,
-                                    Location.FORMAT_SECONDS
-                                )
-                            ),
-                            positiveButtonListener = { _, _ ->
-                                mockTargetList.removeAt(position)
-                                notifyRemoveMockTarget(position)
-                                mainRecyclerViewListener.onRemovedAt(position)
-                            },
-                            negativeButtonTextId = R.string.cancel,
-                            negativeButtonListener = { _, _ ->
-                                notifyItemChanged(position)
-                            },
-                            cancelable = false
-                        )
+                                positiveButtonListener = { _, _ ->
+                                    mockTargetList.removeAt(position)
+                                    notifyItemRemoved(position)
+                                    mainRecyclerViewListener.onRemovedAt(position, removedTarget)
+                                },
+                                negativeButtonTextId = R.string.cancel,
+                                negativeButtonListener = { _, _ ->
+                                    notifyItemChanged(position)
+                                },
+                                cancelable = false
+                            )
+                        } else {
+                            mockTargetList.removeAt(position)
+                            notifyItemRemoved(position)
+                            mainRecyclerViewListener.onRemovedAt(position, removedTarget)
+                        }
+
                     }
 
                     ItemTouchHelper.RIGHT -> {
@@ -120,6 +133,38 @@ class MainRecyclerViewAdapter(
 
                 }
 
+            }
+
+            override fun onChildDraw(
+                c: Canvas?, recyclerView: RecyclerView?, viewHolder: RecyclerView.ViewHolder?,
+                dX: Float, dY: Float,
+                actionState: Int, isCurrentlyActive: Boolean
+            ) {
+                if (viewHolder == null || c == null) return
+                val icon = ContextCompat.getDrawable(
+                    context, if (dX < 0) R.drawable.ic_remove else R.drawable.ic_edit
+                ) ?: return
+                val iconSize = icon.intrinsicWidth
+                val itemView = viewHolder.itemView
+                val itemHeight = itemView.bottom - itemView.top
+                val iconTop = itemView.top + (itemHeight - iconSize) / 2
+                val iconBottom = iconTop + iconSize
+                val iconMargin = (itemHeight - iconSize) / 2
+                if (dX < 0) {
+                    // Remove
+                    val iconLeft = itemView.right - iconMargin - iconSize
+                    val iconRight = itemView.right - iconMargin
+                    icon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
+                    icon.draw(c)
+                } else {
+                    // Edit
+                    val iconLeft = itemView.left + iconMargin
+                    val iconRight = iconLeft + iconSize
+                    icon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
+                    icon.draw(c)
+                }
+
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             }
         }
     )
@@ -139,12 +184,17 @@ class MainRecyclerViewAdapter(
         /**
          * Called when mock target removed from the [mockTargetList]
          *
+         * ## Changelog
+         * ### 0.2.6
+         *
+         *
          * @param [position] The position of removed target
+         * @param [removedTarget] Removed target
          *
          * @author lucka-me
          * @since 0.1
          */
-        fun onRemovedAt(position: Int)
+        fun onRemovedAt(position: Int, removedTarget: MockTarget)
 
         /**
          * Called when long pressed or swiped to right
@@ -152,7 +202,7 @@ class MainRecyclerViewAdapter(
          * @param [position] Position of the card (target)
          *
          * @author lucka-me
-         * @since 0.1
+         * @since 0.2.3
          */
         fun onEditAt(position: Int)
     }
@@ -284,17 +334,5 @@ class MainRecyclerViewAdapter(
      */
     fun notifyAddMockTarget(count: Int = 1) {
         notifyItemRangeInserted(mockTargetList.size - count, count)
-    }
-
-    /**
-     * Should called when target removed from [mockTargetList].
-     *
-     * @param [position] The position of removed target
-     *
-     * @author lucka-me
-     * @since 0.1
-     */
-    fun notifyRemoveMockTarget(position: Int) {
-        notifyItemRemoved(position)
     }
 }
