@@ -3,6 +3,15 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.2.8] - 2018-09-06
+- 0.2.7(231) -> 0.2.8(241)
+- New function: Import from GPX
+
+### Added
+- Import GPX, parse with SAX, support wpt, trkpt, ele and desc.
+```
+
+```markdown
 ## [0.2.7] - 2018-09-05
 - 0.2.6(210) -> 0.2.7(231)
 - New function: Customizing providers

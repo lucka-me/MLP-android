@@ -3,13 +3,18 @@ package labs.lucka.mlp
 import android.content.Context
 import android.net.Uri
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import org.xml.sax.Attributes
+import org.xml.sax.helpers.DefaultHandler
 import java.io.*
+import javax.xml.parsers.SAXParserFactory
 
 /**
  * A class used to save and load data to / from file
  *
  * ## Nested Classes
  * - [FileType]
+ * - [GPXParserHandler]
  *
  * ## Static Methods
  * - [saveData]
@@ -27,7 +32,8 @@ import java.io.*
 class DataKit {
 
     enum class FileType(
-        val menuIndex: Int, val menuTitle: Int, val mime: Int, val importRequestCode: Int, val exportRequestCode: Int
+        val menuIndex: Int, val menuTitle: Int, val mime: Int,
+        val importRequestCode: Int, val exportRequestCode: Int
     ) {
         JSON(
             0, R.string.ie_json, R.string.ie_json_mime,
@@ -37,6 +43,92 @@ class DataKit {
             1, R.string.ie_gpx, R.string.ie_gpx_mime,
             MainActivity.AppRequest.IMPORT_GPX.code, MainActivity.AppRequest.EXPORT_GPX.code
         )
+    }
+
+    /**
+     * ParserHandler for GPX, convert to mock target list
+     *
+     * ## Supported Element Types
+     * - `wpt`, `trkpt`
+     * - `ele`, `desc`
+     *
+     * @see <a href="https://www.jianshu.com/p/e99f061ce67c">Kotlin/Java解析XMl文件的四种方式 | 简书</a>
+     *
+     * @author lucka-me
+     * @since 0.2.8
+     */
+    class GPXParserHandler : DefaultHandler() {
+
+        var mockTargetList: ArrayList<MockTarget> = ArrayList(0)
+        private var longitude: Double? = null
+        private var latitude: Double? = null
+        private var title: String? = null
+        private var altitude: Double? = null
+        private var elementValue: String? = null
+
+        override fun startDocument() {
+            mockTargetList = ArrayList(0)
+            super.startDocument()
+        }
+
+        override fun startElement(
+            uri: String?, localName: String?, qName: String?, attributes: Attributes?
+        ) {
+            super.startElement(uri, localName, qName, attributes)
+            when (qName) {
+                E_WPT, E_TRKPT -> {
+                    longitude = null
+                    latitude = null
+                    title = null
+                    altitude = null
+                    if (attributes != null) {
+                        longitude = attributes.getValue(A_LON).toDoubleOrNull()
+                        latitude = attributes.getValue(A_LAT).toDoubleOrNull()
+                    }
+                }
+
+                E_DESC, E_ELE -> {
+                    elementValue = null
+                }
+            }
+        }
+
+        override fun endElement(uri: String?, localName: String?, qName: String?) {
+            super.endElement(uri, localName, qName)
+            when (qName) {
+                E_WPT, E_TRKPT -> {
+                    mockTargetList.add(MockTarget(
+                        longitude ?: return,
+                        latitude ?: return,
+                        title = title ?: "",
+                        altitude = altitude
+                    ))
+                }
+
+                E_DESC -> {
+                    title = elementValue
+                }
+
+                E_ELE -> {
+                    altitude = elementValue?.toDoubleOrNull()
+                }
+            }
+        }
+
+        override fun characters(ch: CharArray?, start: Int, length: Int) {
+            super.characters(ch, start, length)
+            if (ch == null) return
+            elementValue = String(ch, start, length).trim()
+        }
+
+        companion object {
+            private const val E_WPT = "wpt"
+            private const val E_TRKPT = "trkpt"
+            private const val E_ELE = "ele"
+            private const val E_DESC = "desc"
+            private const val A_LON = "lon"
+            private const val A_LAT = "lat"
+        }
     }
 
     companion object {
@@ -127,6 +219,10 @@ class DataKit {
         /**
          * Convert mock target ArrayList to JSON string.
          *
+         * ## Changelog
+         * ### 0.2.8
+         * - Export pretty printing JSON
+         *
          * @param [mockTargetList] The mock target ArrayList to be converted
          *
          * @return JSON string converted from [mockTargetList]
@@ -135,11 +231,15 @@ class DataKit {
          * @since 0.2.4
          */
         fun exportToJSON(mockTargetList: ArrayList<MockTarget>): String {
-            return Gson().toJson(mockTargetList.toArray())
+            return GsonBuilder().setPrettyPrinting().create().toJson(mockTargetList.toArray())
         }
 
         /**
          * Convert GPX string to mock target array.
+         *
+         * ## Changelog
+         * ### 0.2.8
+         * - Finished, parse with SAX
          *
          * @param [source] The GPX string to be converted
          *
@@ -149,7 +249,10 @@ class DataKit {
          * @since 0.2.4
          */
         fun importFromGPX(source: String): Array<MockTarget> {
-            return arrayOf()
+            val saxParser = SAXParserFactory.newInstance().newSAXParser()
+            val gpxParserHandler = GPXParserHandler()
+            saxParser.parse(source.byteInputStream(), gpxParserHandler)
+            return gpxParserHandler.mockTargetList.toTypedArray()
         }
 
         /**

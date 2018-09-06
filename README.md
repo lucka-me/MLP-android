@@ -1,6 +1,6 @@
 <h1 align=center><a href="#"><img src="./Resource/Banner.svg" alt="Banner"></a></h1>
 <p align=center>
-    <a href="./CHANGELOG.md"><img alt="Version 0.2.7" src="https://img.shields.io/badge/version-0.2.7-orange.svg"/></a>
+    <a href="./CHANGELOG.md"><img alt="Version 0.2.8" src="https://img.shields.io/badge/version-0.2.8-orange.svg"/></a>
     <a href="https://www.android.com/versions/lollipop-5-0/"><img alt="API Level 21" src="https://img.shields.io/badge/API_Level-21-A4C639.svg"/></a>
 </p>
 
@@ -40,6 +40,9 @@ I'm not sure if I'll develop it in the future, but since there are so many known
 - [ ] Import / export target list from / to:
   - [x] `0.2.4` JSON file
   - [ ] GPX file
+    - [x] `0.2.8` Import
+    - [ ] Export
+    - [ ] Convert time to interval
   - [ ] Clipboard
 - [ ] Support preferences:
   - [x] `0.1.4` Enable GPS_PROVODER

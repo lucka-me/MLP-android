@@ -12,12 +12,13 @@ android {
         minSdkVersion 21
         targetSdkVersion 27
         versionCode newVersionCode
-        versionName "0.2.7"
+        versionName "0.2.8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
