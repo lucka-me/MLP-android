@@ -1,14 +1,16 @@
 <h1 align=center><a href="#"><img src="./Resource/Banner.svg" alt="Banner"></a></h1>
 <p align=center>
     <a href="./CHANGELOG.md"><img alt="Version 0.2.8" src="https://img.shields.io/badge/version-0.2.8-orange.svg"/></a>
-    <a href="https://www.android.com/versions/lollipop-5-0/"><img alt="API Level 21" src="https://img.shields.io/badge/API_Level-21-A4C639.svg"/></a>
+    <a href="https://www.android.com/versions/lollipop-5-0/"><img alt="Minmum SDK 21" src="https://img.shields.io/badge/min_SDK-21-A4C639.svg"/></a>
 </p>
 
 MLP is used to provide mock locations in Android. It works with `LocationManager` and the ***Enable mock location*** in Developer options.
 
 The aim of MLP is to test and demonstrate the LBS applications of mine,  [RoundO](https://github.com/lucka-me/RoundO-android "GitHub") and [Patroute](https://github.com/lucka-me/Patroute-android "GitHub"), without going outside. I've tried some other similar applications but no one fits my need.
 
-It took only several hours to develop it, it fits my need, but still buggy and hardly exception-handled, so it **may** work fine only when you follow the usage guidline below carefully.
+~~It took only several hours to develop it, it fits my need, but still buggy and hardly exception-handled, so it **may** work fine only when you follow the usage guideline below carefully.~~
+
+After development during several days, the application is more flexible, but following the guideline is still highly recommended.
 
 ## Usage
 Please follow the steps carefully, otherwise MLP may crash.
@@ -21,6 +23,9 @@ Please follow the steps carefully, otherwise MLP may crash.
 6. Tap the start fab in the right bottom to start MLP foreground service.
 7. Now, the foreground service will send the enabled target(s) one by one and circularly, with interval of 5 seconds. The location will be sent to `GPS_PROVODER` and / or `NETWORK_PROVODER` (Could be configured in Preference screen).
 8. Tap the stop fab to stop the service.
+
+### Import / Export
+MLP could **import / export** JSON in formatt of itself since `0.2.4` and **import** GPX since `0.2.8`. However, the function has not been tested yet, it may be buggy or changed in the future.
 
 ### Notice
 For usage in mainland China: The coordinates are in WGS-84, not GCJ-02. You can look up the coordinate in Google Maps Satellite Layout.
@@ -44,6 +49,7 @@ I'm not sure if I'll develop it in the future, but since there are so many known
     - [ ] Export
     - [ ] Convert time to interval
   - [ ] Clipboard
+  - [ ] CSV
 - [ ] Support preferences:
   - [x] `0.1.4` Enable GPS_PROVODER
   - [x] `0.1.4` Enable NETWORK_PROVODER
@@ -58,4 +64,4 @@ I'm not sure if I'll develop it in the future, but since there are so many known
 - [x] `0.1.2` Document the code
 
 ## License
-This project is licensed under [MIT License](./LICENSE).
+This application is licensed under [MIT License](./LICENSE).
