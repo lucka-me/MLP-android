@@ -26,9 +26,11 @@
     <string name="longitude_title">Longitude</string>
     <string name="latitude_title">Latitude</string>
     <string name="title_title">Title</string>
-    <string name="altitude_title">Altitude</string>
-    <string name="accuracy_title">Accuracy</string>
+    <string name="altitude_title">Altitude (m)</string>
+    <string name="accuracy_title">Accuracy (m)</string>
     <string name="accuracy_default">5.0</string>
+    <string name="interval_title">Interval (ms)</string>
+    <string name="interval_default">5000</string>
     <string name="add_mock_target_success">Success.</string>
     <!-- Delete mock target dialog -->
     <string name="delete_mock_target_confirm_title">Confirm deletion</string>

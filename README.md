@@ -1,6 +1,6 @@
 <h1 align=center><a href="#"><img src="./Resource/Banner.svg" alt="Banner"></a></h1>
 <p align=center>
-    <a href="./CHANGELOG.md"><img alt="Version 0.2.8" src="https://img.shields.io/badge/version-0.2.8-orange.svg"/></a>
+    <a href="./CHANGELOG.md"><img alt="Version 0.2.9" src="https://img.shields.io/badge/version-0.2.9-orange.svg"/></a>
     <a href="https://www.android.com/versions/lollipop-5-0/"><img alt="Minmum SDK 21" src="https://img.shields.io/badge/min_SDK-21-A4C639.svg"/></a>
 </p>
 
@@ -35,10 +35,10 @@ I'm not sure if I'll develop it in the future, but since there are so many known
 
 - [ ] Detect running service in a better way
 - [x] `0.1.2` Detect if the mock location options are ready
-- [ ] More data for mock target:
+- [x] More data for mock target:
   - [x] `0.2` Title / Description
   - [x] `0.2` Update interval
-  - [ ] Support interval in service
+  - [x] `0.2.9` Support interval in service
   - [x] `0.2` Accuracy
   - [x] `0.2` Altitude
   - [x] `0.2.2` Update interface of dialog
@@ -53,7 +53,7 @@ I'm not sure if I'll develop it in the future, but since there are so many known
 - [ ] Support preferences:
   - [x] `0.1.4` Enable GPS_PROVODER
   - [x] `0.1.4` Enable NETWORK_PROVODER
-  - [ ] Enable a custom provider
+  - [x] `0.2.7` Enable a custom provider
 - [ ] UI improvement
   - [x] `0.2.3` Swipe left to delete card
   - [ ] Re-order the cards by drag and drop
@@ -62,6 +62,7 @@ I'm not sure if I'll develop it in the future, but since there are so many known
 - [ ] Service Noification:
   - [ ] Current target
 - [x] `0.1.2` Document the code
+- [ ] Learn to release the application
 
 ## License
 This application is licensed under [MIT License](./LICENSE).

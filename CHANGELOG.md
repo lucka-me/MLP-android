@@ -3,6 +3,15 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.2.9] - 2018-09-08
+- 0.2.8(241) -> 0.2.9(254)
+- New function: Update interval
+
+### Added
+- Support mock target update interval
+```
+
+```markdown
 ## [0.2.8] - 2018-09-06
 - 0.2.7(231) -> 0.2.8(241)
 - New function: Import from GPX

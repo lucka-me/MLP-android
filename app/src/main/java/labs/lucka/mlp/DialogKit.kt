@@ -183,6 +183,8 @@ class DialogKit {
          * - Add button enable only when longitude and latitude are both valid and not being edited
          * ### 0.2.7
          * - Call [onAddClickListener] instead of process adding to list and saving
+         * ### 0.2.9
+         * - Support edit interval
          *
          * @param [context] The context
          * @param [onAddClickListener] Callback fired when the add button is clicked
@@ -225,9 +227,12 @@ class DialogKit {
                         .toString().toDoubleOrNull()
                     val accuracy = dialogLayout.findViewById<EditText>(R.id.accuracyEdit).text
                         .toString().toFloatOrNull()
+                    val interval = dialogLayout.findViewById<EditText>(R.id.intervalEdit).text
+                        .toString().toLongOrNull()
                     onAddClickListener(MockTarget(
                         longitude, latitude, title = title,
-                        altitude = altitude, accuracy = accuracy ?: 5.0F
+                        altitude = altitude, accuracy = accuracy ?: 5.0F,
+                        interval = interval ?: 5000
                     ))
                 }
                 .setNegativeButton(R.string.cancel, null)
@@ -278,6 +283,8 @@ class DialogKit {
          * @param [mockTarget] The mock target to be edit
          * @param [onEdited] Callback fired when the new mock target edited and saved
          *
+         * @see [showAddMockTargetDialog]
+         *
          * @author lucka-me
          * @since 0.2.3
          */
@@ -307,12 +314,14 @@ class DialogKit {
             val titleEdit: EditText = dialogLayout.findViewById(R.id.titleEdit)
             val altitudeEdit: EditText = dialogLayout.findViewById(R.id.altitudeEdit)
             val accuracyEdit: EditText = dialogLayout.findViewById(R.id.accuracyEdit)
+            val intervalEdit: EditText = dialogLayout.findViewById(R.id.intervalEdit)
             longitudeEdit.setText(mockTarget.longitude.toString())
             latitudeEdit.setText(mockTarget.latitude.toString())
             titleEdit.setText(mockTarget.title)
             if (mockTarget.altitude != null)
                 altitudeEdit.setText(mockTarget.altitude.toString())
             accuracyEdit.setText(mockTarget.accuracy.toString())
+            intervalEdit.setText(mockTarget.interval.toString())
 
             val dialog = AlertDialog.Builder(context)
                 .setTitle(R.string.edit_mock_target_title)
@@ -323,11 +332,13 @@ class DialogKit {
                     val title = titleEdit.text.toString()
                     val altitude = altitudeEdit.text.toString().toDoubleOrNull()
                     val accuracy = accuracyEdit.text.toString().toFloatOrNull()
+                    val interval = intervalEdit.text.toString().toLongOrNull()
                     mockTarget.longitude = longitude
                     mockTarget.latitude = latitude
                     mockTarget.title = title
                     mockTarget.altitude = altitude
                     mockTarget.accuracy = accuracy ?: 5.0F
+                    mockTarget.interval = interval ?: 5000
                     onEdited()
                 }
                 .setNegativeButton(R.string.cancel, null)

@@ -24,14 +24,15 @@ import kotlin.collections.ArrayList
  * - Migrated [isServiceOnline] and [isMockLocationEnabled] from [MainActivity]
  * ### 0.2.7
  * - Support customized provider
+ * ### 0.2.9
+ * - Support interval
  *
  * ## Attributes
  * ### Private
  * - [mockTargetList]
- * - [enabledMockTargetList]
+ * - [enabledMockTargetIndexList]
  * - [locationManager]
  * - [timer]
- * - [currentTargetIndex]
  * - [notificationManager]
  * - [notificationId]
  * - [targetProviderList]
@@ -55,10 +56,9 @@ import kotlin.collections.ArrayList
  * @since 0.1
  *
  * @property [mockTargetList] ArrayList for mock targets
- * @property [enabledMockTargetList] ArrayList for enabled mock targets from [mockTargetList]
+ * @property [enabledMockTargetIndexList] ArrayList for enabled mock targets from [mockTargetList]
  * @property [locationManager] Used to send mock location
  * @property [timer] Used to provide mock location with [INTERVAL]
- * @property [currentTargetIndex] Used to identify which target in [enabledMockTargetList] should be sent
  * @property [notificationManager] Used to send notifications and create notification channel in O and above
  * @property [notificationId] Used as unique id for notifications
  * @property [targetProviderList] ArrayList for enabled providers
@@ -70,10 +70,9 @@ import kotlin.collections.ArrayList
 class MockLocationProviderService : Service() {
 
     private var mockTargetList: ArrayList<MockTarget> = ArrayList(0)
-    private var enabledMockTargetList: ArrayList<MockTarget> = ArrayList(0)
+    private var enabledMockTargetIndexList: ArrayList<Int> = ArrayList(0)
     private lateinit var locationManager: LocationManager
     private var timer: Timer = Timer(true)
-    private var currentTargetIndex: Int = 0
     private lateinit var notificationManager: NotificationManager
     private var notificationId = 0
     private var targetProviderList: ArrayList<String> = ArrayList(0)
@@ -105,7 +104,7 @@ class MockLocationProviderService : Service() {
                     Intent(this, MainActivity::class.java),
                     0
                 ))
-                .setSmallIcon(R.drawable.ic_start_service)
+                .setSmallIcon(R.drawable.ic_notification)
                 .build()
         )
         notificationId = 0
@@ -117,10 +116,16 @@ class MockLocationProviderService : Service() {
             pushNotification(error.message)
             stopSelf()
         }
-        for (mockTarget in mockTargetList) {
-            if (mockTarget.enabled)
-                enabledMockTargetList.add(mockTarget)
+        val delayList: ArrayList<Long> = ArrayList(0)
+        var delay: Long = 0
+        for (i in 0 until mockTargetList.size) {
+            if (mockTargetList[i].enabled) {
+                enabledMockTargetIndexList.add(i)
+                delay += mockTargetList[i].interval
+                delayList.add(delay)
+            }
         }
+
 
         // Get preferences
         targetProviderList.clear()
@@ -168,27 +173,25 @@ class MockLocationProviderService : Service() {
         }
 
         // Setup timer task
-        currentTargetIndex = 0
         timer = Timer(false)
-        timer.schedule(object : TimerTask() {
-            override fun run() {
-                val location = enabledMockTargetList[currentTargetIndex].location
-                location.time = Date().time
-                location.elapsedRealtimeNanos = SystemClock.elapsedRealtimeNanos()
-                for (targetProvider in targetProviderList) {
-                    try {
-                        location.provider = targetProvider
-                        locationManager.setTestProviderLocation(targetProvider, location)
-                    } catch (error: Exception) {
-                        pushNotification(error.message)
-                        stopSelf()
+        for (index in 0 until enabledMockTargetIndexList.size) {
+            timer.schedule(object : TimerTask() {
+                override fun run() {
+                    val location = mockTargetList[enabledMockTargetIndexList[index]].location
+                    location.time = Date().time
+                    location.elapsedRealtimeNanos = SystemClock.elapsedRealtimeNanos()
+                    for (targetProvider in targetProviderList) {
+                        try {
+                            location.provider = targetProvider
+                            locationManager.setTestProviderLocation(targetProvider, location)
+                        } catch (error: Exception) {
+                            pushNotification(error.message)
+                            stopSelf()
+                        }
                     }
                 }
-
-                currentTargetIndex++
-                if (currentTargetIndex == enabledMockTargetList.size) currentTargetIndex = 0
-            }
-        }, 0, INTERVAL)
+            }, delayList[index], delay)
+        }
 
         return super.onStartCommand(intent, flags, startId)
     }
@@ -231,7 +234,7 @@ class MockLocationProviderService : Service() {
             NotificationCompat.Builder(this.applicationContext, CHANNEL_ID)
                 .setContentTitle(getString(R.string.service_caught_error_title))
                 .setContentText(message?: getString(R.string.service_caught_error_text_default))
-                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setSmallIcon(R.drawable.ic_notification)
                 .build()
         )
         notificationId++
