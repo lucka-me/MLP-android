@@ -89,14 +89,14 @@ class MainRecyclerViewAdapter(
                     ItemTouchHelper.LEFT -> {
                         val removedTarget = mockTargetList[position]
                         if (context.defaultSharedPreferences.getBoolean(
-                                context.getString(R.string.pref_edit_confirm_delete_key),
+                                context.getString(R.string.pref_edit_confirm_remove_key),
                                 true
                             )) {
                             DialogKit.showDialog(
                                 context,
-                                R.string.delete_mock_target_confirm_title,
+                                R.string.remove_mock_target_confirm_title,
                                 String.format(
-                                    context.getString(R.string.delete_mock_target_confirm_message),
+                                    context.getString(R.string.remove_mock_target_confirm_message),
                                     mockTargetList[position].title,
                                     Location.convert(
                                         mockTargetList[position].longitude,

@@ -8,6 +8,7 @@
     <!-- Main Menu -->
     <string name="menu_main_import">Import</string>
     <string name="menu_main_export">Export</string>
+    <string name="menu_main_clear">Clear</string>
     <string name="menu_main_preference">Preference</string>
     <string name="menu_main_about">About</string>
 
@@ -32,9 +33,14 @@
     <string name="interval_title">Interval (ms)</string>
     <string name="interval_default">5000</string>
     <string name="add_mock_target_success">Success.</string>
-    <!-- Delete mock target dialog -->
-    <string name="delete_mock_target_confirm_title">Confirm deletion</string>
-    <string name="delete_mock_target_confirm_message">Title: %s\nLongitude: %s\nLatitude: %s</string>
+    <!-- Remove mock target -->
+    <string name="remove_mock_target_confirm_title">Remove</string>
+    <string name="remove_mock_target_confirm_message">Title: %s\nLongitude: %s\nLatitude: %s</string>
+    <string name="clear_mock_target_confirm_title">Remove All</string>
+    <string name="clear_mock_target_confirm_message">Confirm to remove all mock targets.</string>
+    <string name="undo">Undo</string>
+    <string name="target_removed">Target removed.</string>
+    <string name="targets_cleared">Target(s) cleared.</string>
     <!-- Developer options dialog -->
     <string name="mock_location_option_title">Developer Options</string>
     <string name="mock_location_option_text">To provide mock location, you must turn on the Enable mock location option in the Developer Options, and select MLP in the Select mock location app option if the option exists.</string>
@@ -51,11 +57,7 @@
 
     <!-- Main recycler view -->
     <string name="example_coordinate">000:00:00.00000</string>
-    <string name="target_title_default">Target %d</string>
-
-    <!-- Snack bar -->
-    <string name="undo">Undo</string>
-    <string name="target_removed">Target removed.</string>
+    <string name="target_title_default">(Target %d)</string>
 
     <!-- Service -->
     <string name="pref_is_service_online_key">pref_is_service_online</string>

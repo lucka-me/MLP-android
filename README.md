@@ -1,6 +1,6 @@
 <h1 align=center><a href="#"><img src="./Resource/Banner.svg" alt="Banner"></a></h1>
 <p align=center>
-    <a href="./CHANGELOG.md"><img alt="Version 0.2.9" src="https://img.shields.io/badge/version-0.2.9-orange.svg"/></a>
+    <a href="./CHANGELOG.md"><img alt="Version 0.2.10" src="https://img.shields.io/badge/version-0.2.10-orange.svg"/></a>
     <a href="https://www.android.com/versions/lollipop-5-0/"><img alt="Minmum SDK 21" src="https://img.shields.io/badge/min_SDK-21-A4C639.svg"/></a>
 </p>
 
@@ -28,7 +28,7 @@ Please follow the steps carefully, otherwise MLP may crash.
 MLP could **import / export** JSON in formatt of itself since `0.2.4` and **import** GPX since `0.2.8`. However, the function has not been tested yet, it may be buggy or changed in the future.
 
 ### Notice
-For usage in mainland China: The coordinates are in WGS-84, not GCJ-02. You can look up the coordinate in Google Maps Satellite Layout.
+For usage in mainland China: The coordinates are in WGS-84, not GCJ-02. You can look up the coordinate in OpenStreetMap or Google Maps Satellite Layout.
 
 ## To-Do
 I'm not sure if I'll develop it in the future, but since there are so many known issues, I'd like to fix and improve MLP when I'm free and glad to do so.
@@ -47,7 +47,7 @@ I'm not sure if I'll develop it in the future, but since there are so many known
   - [ ] GPX file
     - [x] `0.2.8` Import
     - [ ] Export
-    - [ ] Convert time to interval
+    - [ ] `0.2.10` Convert time to interval
   - [ ] Clipboard
   - [ ] CSV
 - [ ] Support preferences:

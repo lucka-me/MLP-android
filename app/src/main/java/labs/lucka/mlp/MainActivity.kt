@@ -65,27 +65,22 @@ class MainActivity : AppCompatActivity() {
                 } catch (error: Exception) {
                     DialogKit.showSimpleAlert(this@MainActivity, error.message)
                 }
-                if (!defaultSharedPreferences.getBoolean(
-                        getString(R.string.pref_edit_confirm_delete_key),
-                        true
-                    )) {
-                    Snackbar
-                        .make(
-                            nestedScrollView,
-                            R.string.target_removed,
-                            Snackbar.LENGTH_LONG
-                        )
-                        .setAction(R.string.undo) {
-                            mockTargetList.add(position, removedTarget)
-                            mainRecyclerViewAdapter.notifyItemInserted(position)
-                            try {
-                                DataKit.saveData(this@MainActivity, mockTargetList)
-                            } catch (error: Exception) {
-                                DialogKit.showSimpleAlert(this@MainActivity, error.message)
-                            }
+                Snackbar
+                    .make(
+                        nestedScrollView,
+                        R.string.target_removed,
+                        Snackbar.LENGTH_LONG
+                    )
+                    .setAction(R.string.undo) {
+                        mockTargetList.add(position, removedTarget)
+                        mainRecyclerViewAdapter.notifyItemInserted(position)
+                        try {
+                            DataKit.saveData(this@MainActivity, mockTargetList)
+                        } catch (error: Exception) {
+                            DialogKit.showSimpleAlert(this@MainActivity, error.message)
                         }
-                        .show()
-                }
+                    }
+                    .show()
 
             }
 
@@ -228,6 +223,56 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
             }
+            R.id.menu_main_clear -> {
+                fun removeAll() {
+                    val oldList: ArrayList<MockTarget> = ArrayList(0)
+                    for (mockTarget in mockTargetList)
+                        oldList.add(mockTarget)
+                    mockTargetList.clear()
+                    mainRecyclerViewAdapter.notifyItemRangeRemoved(0, oldList.size)
+                    try {
+                        DataKit.saveData(this@MainActivity, mockTargetList)
+                    } catch (error: Exception) {
+                        DialogKit.showSimpleAlert(this@MainActivity, error.message)
+                    }
+                    Snackbar
+                        .make(
+                            nestedScrollView,
+                            R.string.targets_cleared,
+                            Snackbar.LENGTH_LONG
+                        )
+                        .setAction(R.string.undo) {
+                            for (mockTarget in oldList)
+                                mockTargetList.add(mockTarget)
+                            mainRecyclerViewAdapter
+                                .notifyItemRangeInserted(0, mockTargetList.size)
+                            try {
+                                DataKit.saveData(this@MainActivity, mockTargetList)
+                            } catch (error: Exception) {
+                                DialogKit.showSimpleAlert(this@MainActivity, error.message)
+                            }
+                        }
+                        .show()
+                }
+                if (defaultSharedPreferences.getBoolean(
+                        getString(R.string.pref_edit_confirm_remove_key), true
+                    )
+                ) {
+                    DialogKit.showDialog(
+                        this,
+                        R.string.clear_mock_target_confirm_title,
+                        R.string.clear_mock_target_confirm_message,
+                        positiveButtonListener = { _, _ ->
+                            removeAll()
+                        },
+                        negativeButtonTextId = R.string.cancel,
+                        cancelable = false
+                    )
+                } else {
+                    removeAll()
+                }
+
+            }
             R.id.menu_main_preference -> {
                 startActivity(Intent(this, PreferenceMainActivity::class.java))
             }
@@ -251,7 +296,9 @@ class MainActivity : AppCompatActivity() {
                     try {
                         val newList = when (requestCode) {
                             AppRequest.IMPORT_GPX.code -> {
-                                DataKit.importFromGPX(DataKit.readFile(this, data.data))
+                                DataKit.importFromGPX(
+                                    this, DataKit.readFile(this, data.data)
+                                )
                             }
                             AppRequest.IMPORT_JSON.code -> {
                                 DataKit.importFromJSON(DataKit.readFile(this, data.data))

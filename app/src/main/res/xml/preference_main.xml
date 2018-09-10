@@ -38,6 +38,11 @@
             android:title="@string/pref_ie_export_enabled_only_title"
             android:summary="@string/pref_ie_export_enabled_only_summary"
             android:defaultValue="false"/>
+        <SwitchPreference
+            android:key="@string/pref_ie_automatic_interval_key"
+            android:title="@string/pref_ie_automatic_interval_title"
+            android:summary="@string/pref_ie_automatic_interval_summary"
+            android:defaultValue="false"/>
 
     </PreferenceCategory>
 
@@ -45,9 +50,9 @@
         android:title="@string/pref_edit_category_title" >
 
         <SwitchPreference
-            android:key="@string/pref_edit_confirm_delete_key"
-            android:title="@string/pref_edit_confirm_delete_title"
-            android:summary="@string/pref_edit_confirm_delete_summary"
+            android:key="@string/pref_edit_confirm_remove_key"
+            android:title="@string/pref_edit_confirm_remove_title"
+            android:summary="@string/pref_edit_confirm_remove_summary"
             android:defaultValue="true"/>
 
     </PreferenceCategory>

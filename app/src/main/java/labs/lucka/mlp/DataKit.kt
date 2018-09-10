@@ -4,9 +4,13 @@ import android.content.Context
 import android.net.Uri
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.internal.bind.util.ISO8601Utils
+import org.jetbrains.anko.defaultSharedPreferences
 import org.xml.sax.Attributes
 import org.xml.sax.helpers.DefaultHandler
 import java.io.*
+import java.text.ParsePosition
+import java.util.*
 import javax.xml.parsers.SAXParserFactory
 
 /**
@@ -48,23 +52,35 @@ class DataKit {
     /**
      * ParserHandler for GPX, convert to mock target list
      *
+     * ## Changelog
+     * ### 0.2.10
+     * - Support `time` and automatic interval
+     * - Requires context
+     *
      * ## Supported Element Types
      * - `wpt`, `trkpt`
-     * - `ele`, `desc`
+     * - `ele`, `desc`, `time`
+     *
+     * @param [context] The context
      *
      * @see <a href="https://www.jianshu.com/p/e99f061ce67c">Kotlin/Java解析XMl文件的四种方式 | 简书</a>
      *
      * @author lucka-me
      * @since 0.2.8
      */
-    class GPXParserHandler : DefaultHandler() {
+    class GPXParserHandler(context: Context) : DefaultHandler() {
 
         var mockTargetList: ArrayList<MockTarget> = ArrayList(0)
         private var longitude: Double? = null
         private var latitude: Double? = null
         private var title: String? = null
         private var altitude: Double? = null
+        private var lastTime: Date? = null
+        private var interval: Long? = null
         private var elementValue: String? = null
+        private val automaticInterval: Boolean = context.defaultSharedPreferences.getBoolean(
+            context.getString(R.string.pref_ie_automatic_interval_key), false
+        )
 
         override fun startDocument() {
             mockTargetList = ArrayList(0)
@@ -81,6 +97,7 @@ class DataKit {
                     latitude = null
                     title = null
                     altitude = null
+                    interval = null
                     if (attributes != null) {
                         longitude = attributes.getValue(A_LON).toDoubleOrNull()
                         latitude = attributes.getValue(A_LAT).toDoubleOrNull()
@@ -101,7 +118,8 @@ class DataKit {
                         longitude ?: return,
                         latitude ?: return,
                         title = title ?: "",
-                        altitude = altitude
+                        altitude = altitude,
+                        interval = interval ?: DEFAULT_INTERVAL
                     ))
                 }
 
@@ -111,6 +129,22 @@ class DataKit {
 
                 E_ELE -> {
                     altitude = elementValue?.toDoubleOrNull()
+                }
+
+                E_TIME -> {
+                    if (automaticInterval) {
+                        if (elementValue != null) {
+                            val currentTime =
+                                ISO8601Utils.parse(elementValue, ParsePosition(0))
+                            if (lastTime == null) {
+                                lastTime = currentTime
+                            } else {
+                                interval = currentTime.time - lastTime!!.time
+                                lastTime = currentTime
+                            }
+
+                        }
+                    }
                 }
             }
         }
@@ -126,8 +160,10 @@ class DataKit {
             private const val E_TRKPT = "trkpt"
             private const val E_ELE = "ele"
             private const val E_DESC = "desc"
+            private const val E_TIME = "time"
             private const val A_LON = "lon"
             private const val A_LAT = "lat"
+            private const val DEFAULT_INTERVAL: Long = 5000
         }
     }
 
@@ -248,9 +284,9 @@ class DataKit {
          * @author lucka-me
          * @since 0.2.4
          */
-        fun importFromGPX(source: String): Array<MockTarget> {
+        fun importFromGPX(context: Context, source: String): Array<MockTarget> {
             val saxParser = SAXParserFactory.newInstance().newSAXParser()
-            val gpxParserHandler = GPXParserHandler()
+            val gpxParserHandler = GPXParserHandler(context)
             saxParser.parse(source.byteInputStream(), gpxParserHandler)
             return gpxParserHandler.mockTargetList.toTypedArray()
         }

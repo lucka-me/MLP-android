@@ -3,6 +3,16 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.2.10] - 2018-09-10
+- 0.2.9(254) -> 0.2.10(261)
+- New function: Automatic interval when import
+
+### Added
+- Clear mock targets
+- Calculate interval from time automatically when import
+```
+
+```markdown
 ## [0.2.9] - 2018-09-08
 - 0.2.8(241) -> 0.2.9(254)
 - New function: Update interval
