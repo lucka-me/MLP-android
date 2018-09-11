@@ -64,6 +64,7 @@
     <string name="service_description">M.L.P. Service</string>
     <string name="service_notification_channel_description">M.L.P. Service Notification</string>
     <string name="service_notification_text">M.L.P. Service is running</string>
+    <string name="service_current_target_title">Current Mock Target</string>
     <string name="service_caught_error_title">Error</string>
     <string name="service_caught_error_text_default">M.L.P. Service encountered an error.\nMaybe you did\'t turn on the Allow Mock Location in Developer Options</string>
 </resources>

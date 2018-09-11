@@ -47,7 +47,8 @@ import kotlin.collections.ArrayList
  * - [onDestroy]
  * - [onBind]
  * ### Private
- * - [pushNotification]
+ * - [pushErrorNotification]
+ * - [updateCurrentTargetNotification]
  * ### Static
  * - [isServiceOnline]
  * - [isMockLocationEnabled]
@@ -74,7 +75,7 @@ class MockLocationProviderService : Service() {
     private lateinit var locationManager: LocationManager
     private var timer: Timer = Timer(true)
     private lateinit var notificationManager: NotificationManager
-    private var notificationId = 0
+    private var notificationId: Int = NORMAL_ID
     private var targetProviderList: ArrayList<String> = ArrayList(0)
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -107,13 +108,13 @@ class MockLocationProviderService : Service() {
                 .setSmallIcon(R.drawable.ic_notification)
                 .build()
         )
-        notificationId = 0
+        notificationId = NORMAL_ID
 
         // Load data
         try {
             mockTargetList = DataKit.loadData(this)
         } catch (error: Exception) {
-            pushNotification(error.message)
+            pushErrorNotification(error.message)
             stopSelf()
         }
         val delayList: ArrayList<Long> = ArrayList(0)
@@ -167,7 +168,7 @@ class MockLocationProviderService : Service() {
                     System.currentTimeMillis()
                 )
             } catch (error: Exception) {
-                pushNotification(error.message)
+                pushErrorNotification(error.message)
                 stopSelf()
             }
         }
@@ -185,10 +186,17 @@ class MockLocationProviderService : Service() {
                             location.provider = targetProvider
                             locationManager.setTestProviderLocation(targetProvider, location)
                         } catch (error: Exception) {
-                            pushNotification(error.message)
+                            pushErrorNotification(error.message)
                             stopSelf()
                         }
                     }
+                    val title = mockTargetList[enabledMockTargetIndexList[index]].title
+                    updateCurrentTargetNotification(
+                        if (title.isEmpty())
+                            String.format(getString(R.string.target_title_default), index)
+                        else
+                            title
+                    )
                 }
             }, delayList[index], delay)
         }
@@ -208,7 +216,7 @@ class MockLocationProviderService : Service() {
                 locationManager.setTestProviderEnabled(targetProvider, false)
                 locationManager.removeTestProvider(targetProvider)
             } catch (error: Exception) {
-                pushNotification(error.message)
+                pushErrorNotification(error.message)
             }
         }
 
@@ -221,14 +229,14 @@ class MockLocationProviderService : Service() {
     }
 
     /**
-     * Push a notification
+     * Push an error notification
      *
-     * @param [message] The message to notify
+     * @param [message] The error message to notify
      *
      * @author lucka-me
      * @since 0.1.1
      */
-    private fun pushNotification(message: String?) {
+    private fun pushErrorNotification(message: String?) {
         notificationManager.notify(
             notificationId,
             NotificationCompat.Builder(this.applicationContext, CHANNEL_ID)
@@ -240,10 +248,31 @@ class MockLocationProviderService : Service() {
         notificationId++
     }
 
+    /**
+     * Push / update the Current Target notification
+     *
+     * @param [mockTargetTitle] The title of current target
+     *
+     * @author lucka-me
+     * @since 0.2.11
+     */
+    private fun updateCurrentTargetNotification(mockTargetTitle: String) {
+        notificationManager.notify(
+            CURRENT_TARGET_ID,
+            NotificationCompat.Builder(this.applicationContext, CHANNEL_ID)
+                .setContentTitle(getString(R.string.service_current_target_title))
+                .setContentText(mockTargetTitle)
+                .setSmallIcon(R.drawable.ic_notification)
+                .build()
+        )
+    }
+
     companion object {
         const val INTERVAL = 5000L
         private const val CHANNEL_ID = "M.L.P. Notification"
         private const val FOREGROUND_ID = 1
+        private const val CURRENT_TARGET_ID = 2
+        private const val NORMAL_ID = 50
 
         /**
          * Used to detect if the [MockLocationProviderService] is running.

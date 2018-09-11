@@ -1,6 +1,6 @@
 <h1 align=center><a href="#"><img src="./Resource/Banner.svg" alt="Banner"></a></h1>
 <p align=center>
-    <a href="./CHANGELOG.md"><img alt="Version 0.2.10" src="https://img.shields.io/badge/version-0.2.10-orange.svg"/></a>
+    <a href="./CHANGELOG.md"><img alt="Version 0.2.11" src="https://img.shields.io/badge/version-0.2.11-orange.svg"/></a>
     <a href="https://www.android.com/versions/lollipop-5-0/"><img alt="Minmum SDK 21" src="https://img.shields.io/badge/min_SDK-21-A4C639.svg"/></a>
 </p>
 
@@ -59,8 +59,8 @@ I'm not sure if I'll develop it in the future, but since there are so many known
   - [ ] Re-order the cards by drag and drop
   - [x] `0.2.3` Long press / swipe right to check details / edit
   - [x] `0.2.6` Option to enable / disable Deletion Confirmation
-- [ ] Service Noification:
-  - [ ] Current target
+- [x] Service Noification:
+  - [x] `0.2.11` Current target
 - [x] `0.1.2` Document the code
 - [ ] Learn to release the application
 

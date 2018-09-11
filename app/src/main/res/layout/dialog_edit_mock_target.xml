@@ -170,6 +170,7 @@
                         android:inputType="numberDecimal"
                         android:text="@string/accuracy_default"
                         app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/accuracyTitle" />
 
                     <TextView

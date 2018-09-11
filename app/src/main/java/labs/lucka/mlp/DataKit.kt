@@ -56,10 +56,18 @@ class DataKit {
      * ### 0.2.10
      * - Support `time` and automatic interval
      * - Requires context
+     * ### 0.2.11
+     * - Fixed: Read value out of targets
      *
      * ## Supported Element Types
      * - `wpt`, `trkpt`
      * - `ele`, `desc`, `time`
+     *
+     * ## Overridden Methods
+     * - [startDocument]
+     * - [startElement]
+     * - [endElement]
+     * - [characters]
      *
      * @param [context] The context
      *
@@ -67,6 +75,17 @@ class DataKit {
      *
      * @author lucka-me
      * @since 0.2.8
+     *
+     * @property [mockTargetList] The list of mock targets
+     * @property [longitude] The longitude of target, from `lon`
+     * @property [latitude] The latitude of target, from `lat`
+     * @property [title] Title of target, from `desc`
+     * @property [altitude] Altitude of target, from `ele`
+     * @property [lastTime] Time of last target, from `time`
+     * @property [interval] Interval between two targets, calculated from [lastTime]
+     * @property [elementValue] Value read from element by [characters]
+     * @property [isInTargetElement] To avoid reading values out of `wpt` or `trkpt`
+     * @property [automaticInterval] Preference: Import / Export - Automatic Interval
      */
     class GPXParserHandler(context: Context) : DefaultHandler() {
 
@@ -78,11 +97,13 @@ class DataKit {
         private var lastTime: Date? = null
         private var interval: Long? = null
         private var elementValue: String? = null
+        private var isInTargetElement: Boolean = false
         private val automaticInterval: Boolean = context.defaultSharedPreferences.getBoolean(
             context.getString(R.string.pref_ie_automatic_interval_key), false
         )
 
         override fun startDocument() {
+            isInTargetElement = false
             mockTargetList = ArrayList(0)
             super.startDocument()
         }
@@ -102,6 +123,7 @@ class DataKit {
                         longitude = attributes.getValue(A_LON).toDoubleOrNull()
                         latitude = attributes.getValue(A_LAT).toDoubleOrNull()
                     }
+                    isInTargetElement = true
                 }
 
                 E_DESC, E_ELE -> {
@@ -112,6 +134,7 @@ class DataKit {
 
         override fun endElement(uri: String?, localName: String?, qName: String?) {
             super.endElement(uri, localName, qName)
+            if (!isInTargetElement) return
             when (qName) {
                 E_WPT, E_TRKPT -> {
                     mockTargetList.add(MockTarget(
@@ -121,6 +144,7 @@ class DataKit {
                         altitude = altitude,
                         interval = interval ?: DEFAULT_INTERVAL
                     ))
+                    isInTargetElement = false
                 }
 
                 E_DESC -> {
@@ -138,6 +162,7 @@ class DataKit {
                                 ISO8601Utils.parse(elementValue, ParsePosition(0))
                             if (lastTime == null) {
                                 lastTime = currentTime
+                                interval = null
                             } else {
                                 interval = currentTime.time - lastTime!!.time
                                 lastTime = currentTime

@@ -3,6 +3,18 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.2.11] - 2018-09-11
+- 0.2.10(261) -> 0.2.11(272)
+- New function & Bug fixed
+
+### Added
+- Notification to show current target
+
+### Fixed
+- Read values that not belong to targets when import from GPX
+```
+
+```markdown
 ## [0.2.10] - 2018-09-10
 - 0.2.9(254) -> 0.2.10(261)
 - New function: Automatic interval when import
