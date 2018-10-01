@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import androidx.core.widget.NestedScrollView
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import org.jetbrains.anko.defaultSharedPreferences
+import org.jetbrains.anko.imageResource
 
 /**
  * MainActivity for MLP
@@ -173,7 +175,9 @@ class MainActivity : AppCompatActivity() {
                 } catch (error: Exception) {
                     DialogKit.showSimpleAlert(this@MainActivity, error.message)
                 }
-                if (MockLocationProviderService.isMockLocationEnabled(this)) {
+                if (mockTargetList.isEmpty()) {
+                    DialogKit.showSimpleAlert(this, R.string.err_no_target)
+                } else if (MockLocationProviderService.isMockLocationEnabled(this)) {
                     val mlpService =
                         Intent(this, MockLocationProviderService::class.java)
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -370,11 +374,14 @@ class MainActivity : AppCompatActivity() {
      * @since 0.1.1
      */
     private fun updateFabService() {
-        fabService.setImageDrawable(getDrawable(
-            if (MockLocationProviderService.isServiceOnline(this)) R.drawable.ic_stop_service
-            else R.drawable.ic_start_service
-        ))
+        fabService.imageResource =
+            if (MockLocationProviderService.isServiceOnline(this)) {
+                R.drawable.ic_stop_service
+            } else {
+                R.drawable.ic_start_service
+            }
+        fabService.hide()
+        fabService.show()
     }
-
 
 }

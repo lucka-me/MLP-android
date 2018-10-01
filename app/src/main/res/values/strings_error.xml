@@ -2,4 +2,5 @@
 <resources>
     <string name="err_coordinate_wrong">Wrong coordinate.</string>
     <string name="err_developer_options_failed">Failed to open Developer Options.</string>
+    <string name="err_no_target">No target, add at least one before starting the service.</string>
 </resources>

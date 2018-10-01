@@ -3,6 +3,21 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.2.14] - 2018-10-01
+- 0.2.13(311) -> 0.2.14(327)
+- Notification modified and bugs fixed
+
+### Changed
+- Display current target in foreground service directly
+
+### Fixed
+- App crashes when start service with no target, it will check and warn user now
+- Icon in service fab will disappear when tapped after "re-showing" and appear
+  after next "re-showing" for unknown reason (probably caused by Material
+  Library), it's fixed temporarily by hiding and showing it once.
+```
+
+```markdown
 ## [0.2.13] - 2018-10-01
 - 0.2.12(276) -> 0.2.13(311)
 - Upgrade Enviroment

@@ -40,6 +40,7 @@ import kotlin.collections.ArrayList
  * - [INTERVAL]
  * - [CHANNEL_ID]
  * - [FOREGROUND_ID]
+ * - [NORMAL_ID]
  *
  * ## Methods
  * ### Overridden
@@ -67,6 +68,7 @@ import kotlin.collections.ArrayList
  * @property [INTERVAL] Interval between two mock location updates
  * @property [CHANNEL_ID] Used for notification channel
  * @property [FOREGROUND_ID] Used as id of foreground service notification
+ * @property [NORMAL_ID] Used as begining id of normal notifications
  */
 class MockLocationProviderService : Service() {
 
@@ -87,17 +89,17 @@ class MockLocationProviderService : Service() {
             val notificationChannel =
                 NotificationChannel(
                     CHANNEL_ID,
-                    getString(R.string.app_name),
+                    getString(R.string.service_description),
                     NotificationManager.IMPORTANCE_DEFAULT
                 )
             notificationChannel.description =
                 getString(R.string.service_notification_channel_description)
+            notificationChannel.enableVibration(false)
             notificationManager.createNotificationChannel(notificationChannel)
         }
-        startForeground(
-            FOREGROUND_ID,
+        val foregroundServiceNotificationBuilder =
             NotificationCompat.Builder(this.applicationContext, CHANNEL_ID)
-                .setContentTitle(getString(R.string.app_name))
+                .setContentTitle(getString(R.string.service_description))
                 .setContentText(getString(R.string.service_notification_text))
                 .setContentIntent(PendingIntent.getActivity(
                     this,
@@ -106,8 +108,7 @@ class MockLocationProviderService : Service() {
                     0
                 ))
                 .setSmallIcon(R.drawable.ic_notification)
-                .build()
-        )
+        startForeground(FOREGROUND_ID, foregroundServiceNotificationBuilder.build())
         notificationId = NORMAL_ID
 
         // Load data
@@ -195,6 +196,7 @@ class MockLocationProviderService : Service() {
                     }
                     val title = mockTargetList[enabledMockTargetIndexList[index]].title
                     updateCurrentTargetNotification(
+                        foregroundServiceNotificationBuilder,
                         if (title.isEmpty())
                             String.format(getString(R.string.target_title_default), index)
                         else
@@ -255,18 +257,27 @@ class MockLocationProviderService : Service() {
     /**
      * Push / update the Current Target notification
      *
+     * ## Changelog
+     * ### 0.2.14
+     * - Update foreground service notification directly
+     *
+     * @param [notificationBuilder] Builder of the foreground service notification
      * @param [mockTargetTitle] The title of current target
+     *
+     * @see <a href="https://stackoverflow.com/a/16435330/10276204">Update text of notification, not entire notification | Stack Overflow</a>
      *
      * @author lucka-me
      * @since 0.2.11
      */
-    private fun updateCurrentTargetNotification(mockTargetTitle: String) {
+    private fun updateCurrentTargetNotification(
+        notificationBuilder: NotificationCompat.Builder, mockTargetTitle: String
+    ) {
         notificationManager.notify(
-            CURRENT_TARGET_ID,
-            NotificationCompat.Builder(this.applicationContext, CHANNEL_ID)
-                .setContentTitle(getString(R.string.service_current_target_title))
-                .setContentText(mockTargetTitle)
-                .setSmallIcon(R.drawable.ic_notification)
+            FOREGROUND_ID,
+            notificationBuilder
+                .setContentText(String.format(
+                    getString(R.string.service_current_target_description), mockTargetTitle
+                ))
                 .build()
         )
     }
@@ -275,7 +286,6 @@ class MockLocationProviderService : Service() {
         const val INTERVAL = 5000L
         private const val CHANNEL_ID = "M.L.P. Notification"
         private const val FOREGROUND_ID = 1
-        private const val CURRENT_TARGET_ID = 2
         private const val NORMAL_ID = 50
 
         /**
