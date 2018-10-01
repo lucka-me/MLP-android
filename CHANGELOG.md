@@ -3,8 +3,21 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.2.13] - 2018-10-01
+- 0.2.12(276) -> 0.2.13(311)
+- Upgrade Enviroment
+
+### Changed
+- Upgrade Android Studio and Gradle to 3.2
+- Upgrade Kotlin to 1.2.71
+- Refactored to AndroidX
+- Remove the unnecessary Android-Support-Preference-V7-Fix dependency
+- Preference summary text modified
+```
+
+```markdown
 ## [0.2.12] - 2018-10-01
-- 0.2.11(272) -> 0.1.12(276)
+- 0.2.11(272) -> 0.2.12(276)
 - New function: Export to GPX
 
 ### Added

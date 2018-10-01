@@ -1,10 +1,8 @@
 package labs.lucka.mlp
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
+import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_customized_provider.*
@@ -67,15 +65,17 @@ class CustomizedProviderActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_customized_provider)
 
-        providerList = ArrayList(defaultSharedPreferences.getStringSet(
+        val customizedProviderList = defaultSharedPreferences.getStringSet(
             getString(R.string.pref_provider_customized_list_key), setOf()
-        ))
+        )
+        providerList =
+            if (customizedProviderList != null) ArrayList(customizedProviderList) else ArrayList()
         customizedProviderRecyclerViewAdapter = CustomizedProviderRecyclerViewAdapter(
             this, providerList, customizedProviderRecyclerViewListener
         )
         customizedProviderRecyclerView
-            .addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-        customizedProviderRecyclerView.layoutManager = LinearLayoutManager(this)
+            .addItemDecoration(androidx.recyclerview.widget.DividerItemDecoration(this, androidx.recyclerview.widget.DividerItemDecoration.VERTICAL))
+        customizedProviderRecyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         customizedProviderRecyclerView.adapter = customizedProviderRecyclerViewAdapter
         customizedProviderRecyclerViewAdapter
             .attachItemTouchHelperTo(customizedProviderRecyclerView)

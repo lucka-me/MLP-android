@@ -3,9 +3,9 @@ package labs.lucka.mlp
 import android.content.Context
 import android.graphics.Canvas
 import android.location.Location
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -73,16 +73,16 @@ class MainRecyclerViewAdapter(
             ItemTouchHelper.ACTION_STATE_IDLE,
             ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
         ) {
+
             override fun onMove(
-                recyclerView: RecyclerView?,
-                viewHolder: RecyclerView.ViewHolder?,
-                target: RecyclerView.ViewHolder?
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
             ): Boolean {
                 return false
             }
 
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int) {
-                if (viewHolder == null) return
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
                 when (direction) {
 
@@ -132,15 +132,13 @@ class MainRecyclerViewAdapter(
                     }
 
                 }
-
             }
 
             override fun onChildDraw(
-                c: Canvas?, recyclerView: RecyclerView?, viewHolder: RecyclerView.ViewHolder?,
+                c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
                 dX: Float, dY: Float,
                 actionState: Int, isCurrentlyActive: Boolean
             ) {
-                if (viewHolder == null || c == null) return
                 val icon = ContextCompat.getDrawable(
                     context, if (dX < 0) R.drawable.ic_remove else R.drawable.ic_edit
                 ) ?: return

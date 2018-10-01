@@ -1,15 +1,15 @@
 package labs.lucka.mlp
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.view.MenuItem
-import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceFragmentCompat
 
 class PreferenceMainActivity : AppCompatActivity() {
 
     class PreferenceMainFragment : PreferenceFragmentCompat() {
 
-        override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
+        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preference_main, rootKey)
         }
     }

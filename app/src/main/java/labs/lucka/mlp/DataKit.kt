@@ -252,7 +252,9 @@ class DataKit {
         }
 
         fun writeFile(context: Context, content: String, uri: Uri?) {
-            val parcelFileDescriptor = context.contentResolver.openFileDescriptor(uri, "w")
+            if (uri == null) return
+            val parcelFileDescriptor =
+                context.contentResolver.openFileDescriptor(uri, "w") ?: return
             val fileOutputStream = FileOutputStream(parcelFileDescriptor.fileDescriptor)
             fileOutputStream.write(content.toByteArray())
             fileOutputStream.close()
@@ -260,9 +262,10 @@ class DataKit {
         }
 
         fun readFile(context: Context, uri: Uri?): String {
+            var result = ""
+            if (uri == null) return  result
             val inputStream = context.contentResolver.openInputStream(uri)
             val bufferedReader = BufferedReader(InputStreamReader(inputStream))
-            var result = ""
             var line: String? = bufferedReader.readLine()
             while (line != null) {
                 result += line + "\n"

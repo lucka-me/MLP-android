@@ -9,7 +9,7 @@ import android.location.LocationProvider
 import android.os.Build
 import android.os.IBinder
 import android.os.SystemClock
-import android.support.v4.app.NotificationCompat
+import androidx.core.app.NotificationCompat
 import org.jetbrains.anko.defaultSharedPreferences
 import java.util.*
 import kotlin.collections.ArrayList
@@ -143,10 +143,13 @@ class MockLocationProviderService : Service() {
         if (defaultSharedPreferences
                 .getBoolean(getString(R.string.pref_provider_customized_enable_key), false)
         ) {
-            targetProviderList
-                .addAll(defaultSharedPreferences.getStringSet(
-                    getString(R.string.pref_provider_customized_list_key), setOf()
-                ))
+            val customizedProviderList = defaultSharedPreferences.getStringSet(
+                getString(R.string.pref_provider_customized_list_key), setOf()
+            )
+            if (customizedProviderList != null) {
+                targetProviderList.addAll(customizedProviderList)
+            }
+
         }
 
         // Setup location manager

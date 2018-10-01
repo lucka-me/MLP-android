@@ -5,13 +5,12 @@
     <string name="pref_provider_category_title">Provider</string>
     <string name="pref_provider_gps_key">pref_provider_gps</string>
     <string name="pref_provider_gps_title">Mock GPS Provider</string>
-    <string name="pref_provider_gps_summary">Send mock location to GPS_PROVIDER</string>
+    <string name="pref_provider_gps_summary">GPS_PROVIDER</string>
     <string name="pref_provider_network_key">pref_provider_network</string>
     <string name="pref_provider_network_title">Mock Network Provider</string>
-    <string name="pref_provider_network_summary">Send mock location to NETWORK_PROVIDER</string>
+    <string name="pref_provider_network_summary">NETWORK_PROVIDER</string>
     <string name="pref_provider_customized_enable_key">pref_provider_customized_enable</string>
     <string name="pref_provider_customized_enable_title">Mock Customized Provider</string>
-    <string name="pref_provider_customized_enable_summary">Send mock location to customized provider(s)</string>
     <string name="pref_provider_customized_manage_key">pref_provider_customized_manage</string>
     <string name="pref_provider_customized_manage_title">Manage Customized Provider</string>
     <string name="pref_provider_customized_list_key">pref_provider_customized_list</string>
@@ -27,13 +26,16 @@
     <string name="pref_ie_category_title">Import / Export</string>
     <string name="pref_ie_export_enabled_only_key">pref_ie_export_enabled_only</string>
     <string name="pref_ie_export_enabled_only_title">Export Enabled Targets Only</string>
-    <string name="pref_ie_export_enabled_only_summary">Only enabled mock targets will be exported</string>
+    <string name="pref_ie_export_enabled_only_summary_on">Only enabled mock targets will be exported</string>
+    <string name="pref_ie_export_enabled_only_summary_off">All mock targets will be exported</string>
     <string name="pref_ie_automatic_interval_key">pref_ie_automatic_interval</string>
     <string name="pref_ie_automatic_interval_title">Automatic Interval</string>
-    <string name="pref_ie_automatic_interval_summary">Calculate interval from time when import</string>
+    <string name="pref_ie_automatic_interval_summary_on">Calculate interval from time when import</string>
+    <string name="pref_ie_automatic_interval_summary_off">Set interval to default</string>
 
     <string name="pref_edit_category_title">Edit</string>
     <string name="pref_edit_confirm_remove_key">pref_edit_confirm_remove</string>
     <string name="pref_edit_confirm_remove_title">Confirm to Remove</string>
-    <string name="pref_edit_confirm_remove_summary">Confirm before removing mock target(s)</string>
+    <string name="pref_edit_confirm_remove_summary_on">Confirm before removing mock target(s)</string>
+    <string name="pref_edit_confirm_remove_summary_off">Remove mock target(s) directly</string>
 </resources>

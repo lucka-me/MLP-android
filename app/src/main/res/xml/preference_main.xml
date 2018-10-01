@@ -18,7 +18,6 @@
         <SwitchPreference
             android:key="@string/pref_provider_customized_enable_key"
             android:title="@string/pref_provider_customized_enable_title"
-            android:summary="@string/pref_provider_customized_enable_summary"
             android:defaultValue="false" />
         <Preference
             android:title="@string/pref_provider_customized_manage_title" >
@@ -36,12 +35,14 @@
         <SwitchPreference
             android:key="@string/pref_ie_export_enabled_only_key"
             android:title="@string/pref_ie_export_enabled_only_title"
-            android:summary="@string/pref_ie_export_enabled_only_summary"
+            android:summaryOn="@string/pref_ie_export_enabled_only_summary_on"
+            android:summaryOff="@string/pref_ie_export_enabled_only_summary_off"
             android:defaultValue="false"/>
         <SwitchPreference
             android:key="@string/pref_ie_automatic_interval_key"
             android:title="@string/pref_ie_automatic_interval_title"
-            android:summary="@string/pref_ie_automatic_interval_summary"
+            android:summaryOn="@string/pref_ie_automatic_interval_summary_on"
+            android:summaryOff="@string/pref_ie_automatic_interval_summary_off"
             android:defaultValue="false"/>
 
     </PreferenceCategory>
@@ -52,7 +53,8 @@
         <SwitchPreference
             android:key="@string/pref_edit_confirm_remove_key"
             android:title="@string/pref_edit_confirm_remove_title"
-            android:summary="@string/pref_edit_confirm_remove_summary"
+            android:summaryOn="@string/pref_edit_confirm_remove_summary_on"
+            android:summaryOff="@string/pref_edit_confirm_remove_summary_off"
             android:defaultValue="true"/>
 
     </PreferenceCategory>

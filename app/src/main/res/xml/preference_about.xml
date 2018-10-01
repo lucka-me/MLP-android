@@ -34,11 +34,11 @@
     <PreferenceCategory android:title="@string/pref_about_dependency_category_title">
 
         <Preference
-            android:title="@string/pref_about_dependency_prefFix_title"
-            android:summary="@string/pref_about_dependency_prefFix_summary">
+            android:title="@string/pref_about_dependency_androidx_title"
+            android:summary="@string/pref_about_dependency_androidx_summary">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="@string/pref_about_dependency_prefFix_url" />
+                android:data="@string/pref_about_dependency_androidx_url" />
         </Preference>
 
         <Preference
@@ -55,14 +55,6 @@
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="@string/pref_about_dependency_gson_url" />
-        </Preference>
-
-        <Preference
-            android:title="@string/pref_about_dependency_supportLibrary_title"
-            android:summary="@string/pref_about_dependency_supportLibrary_summary">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="@string/pref_about_dependency_supportLibrary_url" />
         </Preference>
 
     </PreferenceCategory>
