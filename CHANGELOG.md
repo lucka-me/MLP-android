@@ -3,7 +3,7 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
-## [0.2.11] - 2018-10-01
+## [0.2.12] - 2018-10-01
 - 0.2.11(272) -> 0.1.12(276)
 - New function: Export to GPX
 
