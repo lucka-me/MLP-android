@@ -2,6 +2,7 @@ package labs.lucka.mlp
 
 import android.content.Context
 import android.net.Uri
+import android.util.Xml
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.internal.bind.util.ISO8601Utils
@@ -181,18 +182,25 @@ class DataKit {
         }
 
         companion object {
-            private const val E_WPT = "wpt"
-            private const val E_TRKPT = "trkpt"
-            private const val E_ELE = "ele"
-            private const val E_DESC = "desc"
-            private const val E_TIME = "time"
-            private const val A_LON = "lon"
-            private const val A_LAT = "lat"
             private const val DEFAULT_INTERVAL: Long = 5000
         }
     }
 
     companion object {
+
+        private const val E_TRK = "trk"
+        private const val E_TRKSEG = "trkseg"
+        private const val E_WPT = "wpt"
+        private const val E_TRKPT = "trkpt"
+        private const val E_ELE = "ele"
+        private const val E_DESC = "desc"
+        private const val E_TIME = "time"
+        private const val A_LON = "lon"
+        private const val A_LAT = "lat"
+        private const val ENCODING = "UTF-8"
+        private const val E_GPX = "gpx"
+        private const val E_METADATA = "metadata"
+
         /**
          * Save data to JSON file.
          *
@@ -319,15 +327,57 @@ class DataKit {
         /**
          * Convert mock target ArrayList to GPX string.
          *
+         * ## Changelog
+         * ### 0.2.12
+         * - Finish method
+         *
          * @param [mockTargetList] The mock target ArrayList to be converted
          *
          * @return GPX string converted from [mockTargetList]
+         *
+         * @see <a href="https://stackoverflow.com/a/13631894/10276204">Read/write to external XML file in Android | Stack Overflow</a>
          *
          * @author lucka-me
          * @since 0.2.4
          */
         fun exportToGPX(mockTargetList: ArrayList<MockTarget>): String {
-            return ""
+            val xml = Xml.newSerializer()
+            val writer = StringWriter()
+            var currentTime = Date().time
+            xml.setOutput(writer)
+            xml.startDocument(ENCODING, true)
+            xml.startTag(null, E_GPX)
+            xml.attribute(null, "xmlns", "http://www.topografix.com/GPX/1/1")
+            xml.startTag(null, E_METADATA)
+            xml.text(ISO8601Utils.format(Date(currentTime)))
+            xml.endTag(null, E_METADATA)
+            xml.startTag(null, E_TRK)
+            xml.startTag(null, E_TRKSEG)
+            for (mockTarget in mockTargetList) {
+                xml.startTag(null, E_TRKPT)
+                xml.attribute(null, A_LAT, mockTarget.latitude.toString())
+                xml.attribute(null, A_LON, mockTarget.longitude.toString())
+                if (mockTarget.title.isNotBlank()) {
+                    xml.startTag(null, E_DESC)
+                    xml.text(mockTarget.title)
+                    xml.endTag(null, E_DESC)
+                }
+                if (mockTarget.altitude != null) {
+                    xml.startTag(null, E_ELE)
+                    xml.text(mockTarget.altitude.toString())
+                    xml.endTag(null, E_ELE)
+                }
+                currentTime += mockTarget.interval
+                xml.startTag(null, E_TIME)
+                xml.text(ISO8601Utils.format(Date(currentTime)))
+                xml.endTag(null, E_TIME)
+                xml.endTag(null, E_TRKPT)
+            }
+            xml.endTag(null, E_TRKSEG)
+            xml.endTag(null, E_TRK)
+            xml.endTag(null, E_GPX)
+            xml.endDocument()
+            return writer.toString()
         }
     }
 }

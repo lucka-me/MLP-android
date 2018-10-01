@@ -210,6 +210,7 @@ class MockLocationProviderService : Service() {
 
         timer.cancel()
         timer.purge()
+        notificationManager.cancelAll()
 
         for (targetProvider in targetProviderList) {
             try {

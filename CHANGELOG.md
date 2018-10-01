@@ -3,6 +3,16 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.2.11] - 2018-10-01
+- 0.2.11(272) -> 0.1.12(276)
+- New function: Export to GPX
+
+### Added
+- Export to GPX works now
+- Cancel notifications when server stopped
+```
+
+```markdown
 ## [0.2.11] - 2018-09-11
 - 0.2.10(261) -> 0.2.11(272)
 - New function & Bug fixed
