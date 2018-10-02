@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import androidx.core.widget.NestedScrollView
 import androidx.appcompat.app.AppCompatActivity
@@ -361,6 +360,11 @@ class MainActivity : AppCompatActivity() {
                     } catch (error: Exception) {
                         DialogKit.showSimpleAlert(this, error.message)
                     }
+                    Snackbar.make(
+                        nestedScrollView,
+                        String.format(getString(R.string.export_success), exportTargetList.size),
+                        Snackbar.LENGTH_LONG
+                    ).show()
                 }
             }
         }

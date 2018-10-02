@@ -3,6 +3,16 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.2.15] - 2018-10-02
+- 0.2.14(327) -> 0.2.15(332)
+- Code optimized
+
+### Changed
+- Optimized code for exporting GPX
+- Notify (a snackbar) when export successfully
+```
+
+```markdown
 ## [0.2.14] - 2018-10-01
 - 0.2.13(311) -> 0.2.14(327)
 - Notification modified and bugs fixed

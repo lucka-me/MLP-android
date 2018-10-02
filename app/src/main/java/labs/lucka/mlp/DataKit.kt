@@ -9,6 +9,7 @@ import com.google.gson.internal.bind.util.ISO8601Utils
 import org.jetbrains.anko.defaultSharedPreferences
 import org.xml.sax.Attributes
 import org.xml.sax.helpers.DefaultHandler
+import org.xmlpull.v1.XmlSerializer
 import java.io.*
 import java.text.ParsePosition
 import java.util.*
@@ -333,54 +334,75 @@ class DataKit {
          * ## Changelog
          * ### 0.2.12
          * - Finish method
+         * ### 0.2.15
+         * - Code optimized
          *
          * @param [mockTargetList] The mock target ArrayList to be converted
          *
          * @return GPX string converted from [mockTargetList]
          *
          * @see <a href="https://stackoverflow.com/a/13631894/10276204">Read/write to external XML file in Android | Stack Overflow</a>
+         * @see <a href="https://android.jlelse.eu/how-to-generate-xml-with-kotlin-extension-functions-and-lambdas-in-android-app-976229f1e4d8">How to generate XML with Kotlin Extension functions and Lambdas in Android app | AndroidPub</a>
          *
          * @author lucka-me
          * @since 0.2.4
          */
         fun exportToGPX(mockTargetList: ArrayList<MockTarget>): String {
-            val xml = Xml.newSerializer()
-            val writer = StringWriter()
-            var currentTime = Date().time
-            xml.setOutput(writer)
-            xml.startDocument(ENCODING, true)
-            xml.startTag(null, E_GPX)
-            xml.attribute(null, "xmlns", "http://www.topografix.com/GPX/1/1")
-            xml.startTag(null, E_METADATA)
-            xml.text(ISO8601Utils.format(Date(currentTime)))
-            xml.endTag(null, E_METADATA)
-            xml.startTag(null, E_TRK)
-            xml.startTag(null, E_TRKSEG)
-            for (mockTarget in mockTargetList) {
-                xml.startTag(null, E_TRKPT)
-                xml.attribute(null, A_LAT, mockTarget.latitude.toString())
-                xml.attribute(null, A_LON, mockTarget.longitude.toString())
-                if (mockTarget.title.isNotBlank()) {
-                    xml.startTag(null, E_DESC)
-                    xml.text(mockTarget.title)
-                    xml.endTag(null, E_DESC)
-                }
-                if (mockTarget.altitude != null) {
-                    xml.startTag(null, E_ELE)
-                    xml.text(mockTarget.altitude.toString())
-                    xml.endTag(null, E_ELE)
-                }
-                currentTime += mockTarget.interval
-                xml.startTag(null, E_TIME)
-                xml.text(ISO8601Utils.format(Date(currentTime)))
-                xml.endTag(null, E_TIME)
-                xml.endTag(null, E_TRKPT)
+
+            // Extend XmlSerializer
+            fun XmlSerializer.document(content: XmlSerializer.() -> Unit): String {
+                startDocument(ENCODING, true)
+                val writer = StringWriter()
+                setOutput(writer)
+                content()
+                endDocument()
+                return writer.toString()
             }
-            xml.endTag(null, E_TRKSEG)
-            xml.endTag(null, E_TRK)
-            xml.endTag(null, E_GPX)
-            xml.endDocument()
-            return writer.toString()
+
+            fun XmlSerializer.element(name: String, content: XmlSerializer.() -> Unit) {
+                startTag(null, name)
+                content()
+                endTag(null, name)
+            }
+
+            fun XmlSerializer.attribute(name: String, value: String) =
+                attribute(null, name, value)
+
+            val xml = Xml.newSerializer()
+            var currentTime = Date().time
+
+            return xml.document {
+
+                element(E_GPX) {
+                    attribute("xmlns", "http://www.topografix.com/GPX/1/1")
+
+                    element(E_METADATA) { text(ISO8601Utils.format(Date(currentTime))) }
+
+                    element(E_TRK) {
+
+                        element(E_TRKSEG) {
+
+                            for (mockTarget in mockTargetList) {
+                                element(E_TRKPT) {
+                                    attribute(A_LAT, mockTarget.latitude.toString())
+                                    attribute(A_LON, mockTarget.longitude.toString())
+
+                                    if (mockTarget.title.isNotBlank())
+                                        element(E_DESC) { text(mockTarget.title) }
+                                    if (mockTarget.altitude != null)
+                                        element(E_ELE) { text(mockTarget.altitude.toString()) }
+
+                                    currentTime += mockTarget.interval
+                                    element(E_TIME) { text(ISO8601Utils.format(Date(currentTime))) }
+                                }
+                            }
+
+                        }
+
+                    }
+                }
+
+            }
         }
     }
 }
