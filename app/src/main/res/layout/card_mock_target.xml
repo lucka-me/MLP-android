@@ -29,59 +29,95 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/longitudeTitle"
+            android:id="@+id/coordinateText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="@string/longitude_title"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
+            android:text="@string/coordinate_text"
+            app:layout_constraintStart_toEndOf="@+id/coordinateIcon"
             app:layout_constraintTop_toBottomOf="@+id/titleText" />
-
-        <TextView
-            android:id="@+id/longitudeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/example_coordinate"
-            app:layout_constraintBottom_toBottomOf="@+id/longitudeTitle"
-            app:layout_constraintStart_toEndOf="@+id/longitudeTitle" />
-
-        <TextView
-            android:id="@+id/latitudeTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/latitude_title"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/longitudeTitle" />
-
-        <TextView
-            android:id="@+id/latitudeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/example_coordinate"
-            app:layout_constraintBottom_toBottomOf="@+id/latitudeTitle"
-            app:layout_constraintStart_toEndOf="@+id/latitudeTitle" />
 
         <CheckBox
             android:id="@+id/enableCheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="16dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
             android:clickable="false"
             android:focusable="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/coordinateIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/coordinateText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/coordinateText"
+            app:srcCompat="@drawable/ic_location" />
+
+        <TextView
+            android:id="@+id/altitudeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/altitude_text"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/altitudeIcon"
+            app:layout_constraintTop_toBottomOf="@+id/coordinateText" />
+
+        <ImageView
+            android:id="@+id/altitudeIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/altitudeText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/altitudeText"
+            app:srcCompat="@drawable/ic_altitude" />
+
+        <ImageView
+            android:id="@+id/accuracyIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/altitudeIcon"
+            app:layout_constraintStart_toEndOf="@+id/altitudeText"
+            app:srcCompat="@drawable/ic_accuracy" />
+
+        <TextView
+            android:id="@+id/accuracyText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/accuracy_text"
+            app:layout_constraintBottom_toBottomOf="@+id/altitudeText"
+            app:layout_constraintStart_toEndOf="@+id/accuracyIcon" />
+
+        <ImageView
+            android:id="@+id/intervalIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/accuracyIcon"
+            app:layout_constraintStart_toEndOf="@+id/accuracyText"
+            app:srcCompat="@drawable/ic_interval" />
+
+        <TextView
+            android:id="@+id/intervalText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/interval_text"
+            app:layout_constraintBottom_toBottomOf="@+id/accuracyText"
+            app:layout_constraintStart_toEndOf="@+id/intervalIcon" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

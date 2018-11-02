@@ -1,61 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory
-        android:title="@string/pref_provider_category_title">
+    <PreferenceCategory android:title="@string/pref_provider_category_title">
 
         <SwitchPreference
-            android:title="@string/pref_provider_gps_title"
+            android:defaultValue="true"
             android:key="@string/pref_provider_gps_key"
             android:summary="@string/pref_provider_gps_summary"
-            android:defaultValue="true" />
+            android:title="@string/pref_provider_gps_title" />
         <SwitchPreference
+            android:defaultValue="true"
             android:key="@string/pref_provider_network_key"
-            android:title="@string/pref_provider_network_title"
             android:summary="@string/pref_provider_network_summary"
-            android:defaultValue="true" />
+            android:title="@string/pref_provider_network_title" />
         <SwitchPreference
+            android:defaultValue="false"
             android:key="@string/pref_provider_customized_enable_key"
-            android:title="@string/pref_provider_customized_enable_title"
-            android:defaultValue="false" />
-        <Preference
-            android:title="@string/pref_provider_customized_manage_title" >
+            android:title="@string/pref_provider_customized_enable_title" />
+        <Preference android:title="@string/pref_provider_customized_manage_title">
             <intent
                 android:action="android.intent.action.MAIN"
-                android:targetPackage="@string/package_name"
-                android:targetClass="@string/customized_provider_class_name" />
+                android:targetClass="@string/customized_provider_class_name"
+                android:targetPackage="@string/package_name" />
         </Preference>
 
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="@string/pref_ie_category_title" >
+    <PreferenceCategory android:title="@string/pref_ie_category_title">
 
         <SwitchPreference
+            android:defaultValue="false"
             android:key="@string/pref_ie_export_enabled_only_key"
-            android:title="@string/pref_ie_export_enabled_only_title"
-            android:summaryOn="@string/pref_ie_export_enabled_only_summary_on"
             android:summaryOff="@string/pref_ie_export_enabled_only_summary_off"
-            android:defaultValue="false"/>
+            android:summaryOn="@string/pref_ie_export_enabled_only_summary_on"
+            android:title="@string/pref_ie_export_enabled_only_title" />
         <SwitchPreference
+            android:defaultValue="false"
             android:key="@string/pref_ie_automatic_interval_key"
-            android:title="@string/pref_ie_automatic_interval_title"
-            android:summaryOn="@string/pref_ie_automatic_interval_summary_on"
             android:summaryOff="@string/pref_ie_automatic_interval_summary_off"
-            android:defaultValue="false"/>
+            android:summaryOn="@string/pref_ie_automatic_interval_summary_on"
+            android:title="@string/pref_ie_automatic_interval_title" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="@string/pref_edit_category_title" >
+    <PreferenceCategory android:title="@string/pref_edit_category_title">
 
         <SwitchPreference
+            android:defaultValue="true"
             android:key="@string/pref_edit_confirm_remove_key"
-            android:title="@string/pref_edit_confirm_remove_title"
-            android:summaryOn="@string/pref_edit_confirm_remove_summary_on"
             android:summaryOff="@string/pref_edit_confirm_remove_summary_off"
-            android:defaultValue="true"/>
+            android:summaryOn="@string/pref_edit_confirm_remove_summary_on"
+            android:title="@string/pref_edit_confirm_remove_title" />
 
     </PreferenceCategory>
 

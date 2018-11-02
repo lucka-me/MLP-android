@@ -59,6 +59,10 @@
     <!-- Main recycler view -->
     <string name="example_coordinate">000:00:00.00000</string>
     <string name="target_title_default">(Target %d)</string>
+    <string name="coordinate_text">(%s, %s)</string>
+    <string name="altitude_text">%.1f m</string>
+    <string name="accuracy_text">%.1f m</string>
+    <string name="interval_text">%.3f s</string>
 
     <!-- Service -->
     <string name="pref_is_service_online_key">pref_is_service_online</string>

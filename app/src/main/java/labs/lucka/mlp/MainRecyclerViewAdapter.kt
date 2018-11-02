@@ -242,8 +242,10 @@ class MainRecyclerViewAdapter(
      *
      * ## Public Attributes
      * - [titleText]
-     * - [longitudeText]
-     * - [latitudeText]
+     * - [coordinateText]
+     * - [altitudeText]
+     * - [accuracyText]
+     * - [intervalText]
      * - [enableCheckBox]
      *
      * @param [itemView] View of the item
@@ -253,8 +255,10 @@ class MainRecyclerViewAdapter(
      * @since 0.1
      *
      * @property [titleText] [TextView] to present [MockTarget.title]
-     * @property [longitudeText] [TextView] to present [MockTarget.longitude]
-     * @property [latitudeText] [TextView] to present [MockTarget.latitude]
+     * @property [coordinateText] [TextView] to present [MockTarget.longitude] and [MockTarget.latitude]
+     * @property [altitudeText] [TextView] to present [MockTarget.altitude]
+     * @property [accuracyText] [TextView] to present [MockTarget.accuracy]
+     * @property [intervalText] [TextView] to present [MockTarget.interval] in second
      * @property [enableCheckBox] [CheckBox] to present [MockTarget.enabled]
      */
     class ViewHolderCardMockTarget(
@@ -263,8 +267,10 @@ class MainRecyclerViewAdapter(
     ) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
 
         val titleText: TextView = itemView.findViewById(R.id.titleText)
-        val longitudeText: TextView = itemView.findViewById(R.id.longitudeText)
-        val latitudeText: TextView = itemView.findViewById(R.id.latitudeText)
+        val coordinateText: TextView = itemView.findViewById(R.id.coordinateText)
+        val altitudeText: TextView = itemView.findViewById(R.id.altitudeText)
+        val accuracyText: TextView = itemView.findViewById(R.id.accuracyText)
+        val intervalText: TextView = itemView.findViewById(R.id.intervalText)
         val enableCheckBox: CheckBox = itemView.findViewById(R.id.enableCheckBox)
 
         init {
@@ -296,13 +302,25 @@ class MainRecyclerViewAdapter(
             } else {
                 mockTargetList[position].title
             }
-            holder.longitudeText.text = Location.convert(
-                mockTargetList[position].location.longitude,
-                Location.FORMAT_SECONDS
+            holder.coordinateText.text = String.format(
+                context.getString(R.string.coordinate_text),
+                Location.convert(
+                    mockTargetList[position].location.longitude,
+                    Location.FORMAT_SECONDS
+                ),
+                Location.convert(
+                    mockTargetList[position].location.latitude,
+                    Location.FORMAT_SECONDS
+                )
             )
-            holder.latitudeText.text = Location.convert(
-                mockTargetList[position].location.latitude,
-                Location.FORMAT_SECONDS
+            holder.altitudeText.text = String.format(
+                context.getString(R.string.altitude_text), mockTargetList[position].altitude
+            )
+            holder.accuracyText.text = String.format(
+                context.getString(R.string.accuracy_text), mockTargetList[position].accuracy
+            )
+            holder.intervalText.text = String.format(
+                context.getString(R.string.interval_text), mockTargetList[position].interval / 1000.0
             )
             holder.enableCheckBox.isChecked = mockTargetList[position].enabled
         }

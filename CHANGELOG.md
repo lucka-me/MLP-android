@@ -3,6 +3,15 @@
 <h1 align=center>Changelog</h1>
 
 ```markdown
+## [0.2.16] - 2018-10-02
+- 0.2.15(332) -> 0.2.16(340)
+- UI adjusted
+
+### Changed
+- Display altitude, accuracy and interval in card
+```
+
+```markdown
 ## [0.2.15] - 2018-10-02
 - 0.2.14(327) -> 0.2.15(332)
 - Code optimized
