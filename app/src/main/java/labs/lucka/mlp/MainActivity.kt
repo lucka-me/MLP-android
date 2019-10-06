@@ -2,6 +2,7 @@ package labs.lucka.mlp
 
 import android.app.Activity
 import android.content.Intent
+import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
@@ -15,87 +16,51 @@ import kotlinx.android.synthetic.main.content_main.*
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.imageResource
 
-/**
- * MainActivity for MLP
- *
- * ## Changelog
- * ### 0.2
- * - Replace saveData and loadData with [DataKit]
- * - Migrate isServiceOnline] and isMockLocationEnabled to [MockLocationProviderService]
- * - Migrate showDeveloperOptionsDialog and showAddMockTargetDialog to [DialogKit]
- * ### 0.2.4
- * - Import / export JSON (Totally ready)
- * - Import / export GPX (UI only)
- *
- * ## Private Attributes
- * - [mockTargetList]
- * - [mainRecyclerViewAdapter]
- * - [mainRecyclerViewListener]
- *
- * ## Nested Classes
- * - [AppRequest]
- *
- * ## Methods
- * ### Overridden
- * - [onCreate]
- * - [onCreateOptionsMenu]
- * - [onOptionsItemSelected]
- * - [onActivityResult]
- * ### Private
- * - [updateFabService]
- *
- * @see <a href="https://www.techotopia.com/index.php/An_Android_Storage_Access_Framework_Example#Saving_to_a_Storage_File">An Android Storage Access Framework Example | Techotopia</a>
- *
- * @author lucka-me
- * @since 0.1
- *
- * @property [mockTargetList] ArrayList for mock targets
- * @property [mainRecyclerViewAdapter] Adapter for [mainRecyclerView]
- * @property [mainRecyclerViewListener] Listener for message from [mainRecyclerViewAdapter]
- */
 class MainActivity : AppCompatActivity() {
 
-    private var mockTargetList: ArrayList<MockTarget> = ArrayList(0)
-    private lateinit var mainRecyclerViewAdapter: MainRecyclerViewAdapter
-    private val mainRecyclerViewListener: MainRecyclerViewAdapter.MainRecyclerViewListener =
-        object : MainRecyclerViewAdapter.MainRecyclerViewListener {
+    private lateinit var recyclerViewAdapter: MockTargetRecyclerViewAdapter
+    private val recyclerViewListener: MockTargetRecyclerViewAdapter.MainRecyclerViewListener =
+        object : MockTargetRecyclerViewAdapter.MainRecyclerViewListener {
 
-            override fun onRemovedAt(position: Int, removedTarget: MockTarget) {
-                try {
-                    DataKit.saveData(this@MainActivity, mockTargetList)
-                } catch (error: Exception) {
-                    DialogKit.showSimpleAlert(this@MainActivity, error.message)
+            override fun onRemove(
+                mockTarget: MockTarget, onConfirmed: () -> Unit, onCanceled: () -> Unit
+            ) {
+
+                val remove = {
+                    onConfirmed()
+                    Snackbar
+                        .make(
+                            nested_scroll_view_main, R.string.target_removed, Snackbar.LENGTH_LONG
+                        )
+                        .setAction(R.string.undo) { recyclerViewAdapter.add(mockTarget) }
+                        .show()
                 }
-                Snackbar
-                    .make(
-                        nestedScrollView,
-                        R.string.target_removed,
-                        Snackbar.LENGTH_LONG
+
+                if (defaultSharedPreferences
+                        .getBoolean(getString(R.string.pref_edit_confirm_remove_key), true)
+                ) {
+                    DialogKit.showDialog(
+                        this@MainActivity,
+                        R.string.remove_mock_target_confirm_title,
+                        getString(
+                            R.string.remove_mock_target_confirm_message,
+                            mockTarget.title,
+                            Location.convert(mockTarget.longitude, Location.FORMAT_SECONDS),
+                            Location.convert(mockTarget.latitude, Location.FORMAT_SECONDS)
+                        ),
+                        positiveButtonListener = { _, _ -> remove() },
+                        negativeButtonTextId = R.string.cancel,
+                        negativeButtonListener = { _, _ -> onCanceled() },
+                        cancelable = false
                     )
-                    .setAction(R.string.undo) {
-                        mockTargetList.add(position, removedTarget)
-                        mainRecyclerViewAdapter.notifyItemInserted(position)
-                        try {
-                            DataKit.saveData(this@MainActivity, mockTargetList)
-                        } catch (error: Exception) {
-                            DialogKit.showSimpleAlert(this@MainActivity, error.message)
-                        }
-                    }
-                    .show()
+                } else {
+                    remove()
+                }
 
             }
 
-            override fun onEditAt(position: Int) {
-                DialogKit.showEditMockTargetDialog(
-                    this@MainActivity, mockTargetList[position]
-                ) {
-                    try {
-                        DataKit.saveData(this@MainActivity, mockTargetList)
-                    } catch (error: Exception) {
-                        DialogKit.showSimpleAlert(this@MainActivity, error.message)
-                    }
-                    mainRecyclerViewAdapter.notifyItemChanged(position)
-                }
+            override fun onEdit(mockTarget: MockTarget, onSave: () -> Unit) {
+                DialogKit.showEditMockTargetDialog(this@MainActivity, mockTarget, onSave)
             }
 
         }
@@ -106,7 +71,7 @@ class MainActivity : AppCompatActivity() {
      * @author lucka-me
      * @since 0.2.4
      */
-    enum class AppRequest(val code: Int) {
+    enum class Request(val code: Int) {
         IMPORT_GPX(3101),
         IMPORT_JSON(3102),
         EXPORT_GPX(3201),
@@ -118,96 +83,81 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        // Load data
-        try {
-            mockTargetList = DataKit.loadData(this)
-        } catch (error: Exception) {
-            DialogKit.showSimpleAlert(this@MainActivity, error.message)
-        }
+        recyclerViewAdapter = MockTargetRecyclerViewAdapter(this, recyclerViewListener)
+        recycler_view_mock_target.layoutManager = LinearLayoutManager(this)
+        recycler_view_mock_target.adapter = recyclerViewAdapter
+        recycler_view_mock_target.isNestedScrollingEnabled = false
+        recyclerViewAdapter.attachItemTouchHelperTo(recycler_view_mock_target)
 
-        // Setup recycler view
-        mainRecyclerViewAdapter =
-            MainRecyclerViewAdapter(this, mockTargetList, mainRecyclerViewListener)
-        mainRecyclerView.layoutManager = LinearLayoutManager(this)
-        mainRecyclerView.adapter = mainRecyclerViewAdapter
-        mainRecyclerView.isNestedScrollingEnabled = false
-        mainRecyclerViewAdapter.attachItemTouchHelperTo(mainRecyclerView)
-
-        // Setup fabs
-        fabAddMockTarget.setOnClickListener { _ ->
+        fab_add.setOnClickListener {
             DialogKit.showAddMockTargetDialog(this) { newTarget ->
-                mockTargetList.add(newTarget)
-                try {
-                    DataKit.saveData(this, mockTargetList)
-                } catch (error: Exception) {
-                    DialogKit.showSimpleAlert(this, error.message)
-                }
-                mainRecyclerViewAdapter.notifyAddMockTarget()
-                Snackbar.make(
-                    nestedScrollView,
-                    R.string.add_mock_target_success,
-                    Snackbar.LENGTH_LONG
-                ).show()
+                recyclerViewAdapter.add(newTarget)
+                Snackbar
+                    .make(
+                        nested_scroll_view_main,
+                        R.string.add_mock_target_success, Snackbar.LENGTH_LONG
+                    )
+                    .show()
             }
         }
 
-        nestedScrollView.setOnScrollChangeListener(
+        nested_scroll_view_main.setOnScrollChangeListener(
             NestedScrollView.OnScrollChangeListener { _, _, scrollY, _, oldScrollY ->
                 if (scrollY > oldScrollY) {
-                    fabAddMockTarget.hide()
+                    fab_add.hide()
                 } else {
-                    fabAddMockTarget.show()
+                    fab_add.show()
                 }
             }
         )
 
         updateFabService()
 
-        fabService.setOnClickListener { _ ->
-            if (MockLocationProviderService.isServiceOnline(this)) {
-                val mlpService = Intent(this, MockLocationProviderService::class.java)
+        fab_service.setOnClickListener {
+
+            if (MLPService.isServiceOnline(this)) {
+                val mlpService = Intent(this, MLPService::class.java)
                 stopService(mlpService)
                 updateFabService()
             } else {
-                try {
-                    DataKit.saveData(this@MainActivity, mockTargetList)
-                } catch (error: Exception) {
-                    DialogKit.showSimpleAlert(this@MainActivity, error.message)
-                }
-                if (mockTargetList.isEmpty()) {
-                    DialogKit.showSimpleAlert(this, R.string.err_no_target)
-                } else if (MockLocationProviderService.isMockLocationEnabled(this)) {
-                    val mlpService =
-                        Intent(this, MockLocationProviderService::class.java)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        startForegroundService(mlpService)
-                    } else {
-                        startService(mlpService)
+                recyclerViewAdapter.saveData()
+                when {
+
+                    recyclerViewAdapter.isEmpty() ->
+                        DialogKit.showSimpleAlert(this, R.string.err_no_target)
+
+                    MLPService.isMockLocationEnabled(this) -> {
+                        val mlpService = Intent(this, MLPService::class.java)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            startForegroundService(mlpService)
+                        } else {
+                            startService(mlpService)
+                        }
+                        updateFabService()
                     }
-                    updateFabService()
-                } else {
-                    DialogKit.showDeveloperOptionsDialog(this)
+
+                    else -> DialogKit.showDeveloperOptionsDialog(this)
+
                 }
             }
+
         }
 
     }
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
 
         when(item.itemId) {
+
             R.id.menu_main_import -> {
-                DialogKit.showImportExportMenuDialog(this, R.string.import_title) { fileType ->
+                DialogKit
+                    .showFileTypeSelectMenuDialog(this, R.string.import_title) { fileType ->
                     startActivityForResult(
                         Intent(Intent.ACTION_GET_CONTENT)
                             .addCategory(Intent.CATEGORY_OPENABLE)
@@ -216,8 +166,10 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
             }
+
             R.id.menu_main_export -> {
-                DialogKit.showImportExportMenuDialog(this, R.string.export_title) { fileType ->
+                DialogKit
+                    .showFileTypeSelectMenuDialog(this, R.string.export_title) { fileType ->
                     startActivityForResult(
                         Intent(Intent.ACTION_CREATE_DOCUMENT)
                             .addCategory(Intent.CATEGORY_OPENABLE)
@@ -226,34 +178,16 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
             }
+
             R.id.menu_main_clear -> {
-                fun removeAll() {
-                    val oldList: ArrayList<MockTarget> = ArrayList(0)
-                    for (mockTarget in mockTargetList)
-                        oldList.add(mockTarget)
-                    mockTargetList.clear()
-                    mainRecyclerViewAdapter.notifyItemRangeRemoved(0, oldList.size)
-                    try {
-                        DataKit.saveData(this@MainActivity, mockTargetList)
-                    } catch (error: Exception) {
-                        DialogKit.showSimpleAlert(this@MainActivity, error.message)
-                    }
+                val removeAll = {
+                    val oldList = recyclerViewAdapter.clear()
                     Snackbar
                         .make(
-                            nestedScrollView,
-                            R.string.targets_cleared,
-                            Snackbar.LENGTH_LONG
+                            nested_scroll_view_main, R.string.targets_cleared, Snackbar.LENGTH_LONG
                         )
                         .setAction(R.string.undo) {
-                            for (mockTarget in oldList)
-                                mockTargetList.add(mockTarget)
-                            mainRecyclerViewAdapter
-                                .notifyItemRangeInserted(0, mockTargetList.size)
-                            try {
-                                DataKit.saveData(this@MainActivity, mockTargetList)
-                            } catch (error: Exception) {
-                                DialogKit.showSimpleAlert(this@MainActivity, error.message)
-                            }
+                            oldList.forEach { recyclerViewAdapter.add(it) }
                         }
                         .show()
                 }
@@ -277,10 +211,7 @@ class MainActivity : AppCompatActivity() {
 
             }
             R.id.menu_main_preference -> {
-                startActivity(Intent(this, PreferenceMainActivity::class.java))
-            }
-            R.id.menu_main_about -> {
-                startActivity(Intent(this, PreferenceAboutActivity::class.java))
+                startActivity(Intent(this, PreferenceActivity::class.java))
             }
         }
 
@@ -291,101 +222,67 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if ((requestCode != Activity.RESULT_OK) || (data == null)) {
+            return super.onActivityResult(requestCode, resultCode, data)
+        }
+
         when (requestCode) {
 
-            AppRequest.IMPORT_GPX.code,
-            AppRequest.IMPORT_JSON.code -> {
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    try {
-                        val newList = when (requestCode) {
-                            AppRequest.IMPORT_GPX.code -> {
-                                DataKit.importFromGPX(
-                                    this, DataKit.readFile(this, data.data)
-                                )
-                            }
-                            AppRequest.IMPORT_JSON.code -> {
-                                DataKit.importFromJSON(DataKit.readFile(this, data.data))
-                            }
-                            else -> return
-                        }
-                        if (newList.isNotEmpty()) {
-                            mockTargetList.addAll(newList)
-                            mainRecyclerViewAdapter.notifyItemRangeInserted(
-                                mockTargetList.size - newList.size, newList.size
-                            )
-                            DataKit.saveData(this, mockTargetList)
-                            Snackbar.make(
-                                nestedScrollView,
-                                String.format(getString(R.string.import_success), newList.size),
-                                Snackbar.LENGTH_LONG
-                            ).show()
-                        } else {
-                            Snackbar.make(
-                                nestedScrollView, R.string.import_empty, Snackbar.LENGTH_LONG
-                            ).show()
-                        }
-                    } catch (error: Exception) {
-                        DialogKit.showSimpleAlert(
-                            this,
-                            String.format(getString(R.string.import_failed), error.message)
+            Request.IMPORT_GPX.code,
+            Request.IMPORT_JSON.code -> {
+
+                val onFinished = { size: Int ->
+                    Snackbar
+                        .make(
+                            nested_scroll_view_main,
+                            if (size > 0)
+                                getString(R.string.import_success, size)
+                            else
+                                getString(R.string.import_empty),
+                            Snackbar.LENGTH_LONG
                         )
-                    }
+                        .show()
                 }
+
+                val onFailed = { error: Exception ->
+                    DialogKit.showSimpleAlert(this, error.message)
+                }
+
+                recyclerViewAdapter.import(requestCode, data.data, onFinished, onFailed)
+
             }
 
-            AppRequest.EXPORT_GPX.code,
-            AppRequest.EXPORT_JSON.code -> {
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    var exportTargetList: ArrayList<MockTarget> = ArrayList(0)
-                    if (defaultSharedPreferences.getBoolean(
-                            getString(R.string.pref_ie_export_enabled_only_key), false
-                        )) {
-                        for (target in mockTargetList)
-                            if (target.enabled) exportTargetList.add(target)
-                    } else {
-                        exportTargetList = mockTargetList
-                    }
-                    try {
-                        DataKit.writeFile(
-                            this,
-                            when (requestCode) {
-                                AppRequest.EXPORT_GPX.code ->
-                                    DataKit.exportToGPX(exportTargetList)
-                                AppRequest.EXPORT_JSON.code ->
-                                    DataKit.exportToJSON(exportTargetList)
-                                else -> return
-                            },
-                            data.data
+            Request.EXPORT_GPX.code,
+            Request.EXPORT_JSON.code -> {
+                val onFinished = { size: Int ->
+                    Snackbar
+                        .make(
+                            nested_scroll_view_main,
+                            getString(R.string.export_success, size), Snackbar.LENGTH_LONG
                         )
-                    } catch (error: Exception) {
-                        DialogKit.showSimpleAlert(this, error.message)
-                    }
-                    Snackbar.make(
-                        nestedScrollView,
-                        String.format(getString(R.string.export_success), exportTargetList.size),
-                        Snackbar.LENGTH_LONG
-                    ).show()
+                        .show()
                 }
+
+                val onFailed = { error: Exception ->
+                    DialogKit.showSimpleAlert(this, error.message)
+                }
+
+                recyclerViewAdapter.export(requestCode, data.data, onFinished, onFailed)
+
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    /**
-     * Update the icon of [fabService]
-     *
-     * @author lucka-me
-     * @since 0.1.1
-     */
     private fun updateFabService() {
-        fabService.imageResource =
-            if (MockLocationProviderService.isServiceOnline(this)) {
+        fab_service.imageResource =
+            if (MLPService.isServiceOnline(this)) {
                 R.drawable.ic_stop_service
             } else {
                 R.drawable.ic_start_service
             }
-        fabService.hide()
-        fabService.show()
+        fab_service.hide()
+        fab_service.show()
     }
 
 }

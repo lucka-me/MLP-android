@@ -3,6 +3,7 @@ package labs.lucka.mlp
 import android.content.Context
 import android.graphics.Canvas
 import android.location.Location
+import android.net.Uri
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -11,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.google.android.material.card.MaterialCardView
+import org.jetbrains.anko.defaultSharedPreferences
 
 class MockTargetRecyclerViewAdapter(
     private val context: Context,
@@ -198,10 +200,71 @@ class MockTargetRecyclerViewAdapter(
         return oldList
     }
 
+    fun isEmpty() = mockTargetList.isEmpty()
+
     fun saveData() {
         DataKit.saveData(context, mockTargetList)
     }
 
-    fun isEmpty() = mockTargetList.isEmpty()
+    fun import(
+        requestCode: Int, uri: Uri?,
+        onFinished: (size: Int) -> Unit, onFailed: (error: Exception) -> Unit
+    ) {
+        try {
+            val newList = when (requestCode) {
+                MainActivity.Request.IMPORT_GPX.code -> DataKit
+                    .importFromGPX(
+                        DataKit.readFile(context, uri),
+                        context.defaultSharedPreferences
+                            .getBoolean(
+                                context.getString(R.string.pref_ie_automatic_interval_key), false
+                            )
+                    )
+                MainActivity.Request.IMPORT_JSON.code -> DataKit
+                    .importFromJSON(DataKit.readFile(context, uri))
+                else -> return onFailed(Exception())
+            }
+            if (newList.isNotEmpty()) {
+                val oldSize = mockTargetList.size
+                mockTargetList.addAll(newList)
+                notifyItemRangeInserted(oldSize, newList.size)
+                onFinished(newList.size)
+            } else {
+                onFinished(newList.size)
+            }
+        } catch (error: Exception) {
+            onFailed(error)
+        }
+    }
+
+    fun export(
+        requestCode: Int, uri: Uri?,
+        onFinished: (size: Int) -> Unit, onFailed: (error: Exception) -> Unit
+    ) {
+        val exportTargetList = arrayListOf<MockTarget>()
+        if (context.defaultSharedPreferences
+                .getBoolean(context.getString(R.string.pref_ie_export_enabled_only_key), false)
+        ) {
+            mockTargetList.forEach { if (it.enabled) exportTargetList.add(it) }
+        } else {
+            exportTargetList.addAll(mockTargetList)
+        }
+        try {
+            DataKit.writeFile(
+                context,
+                when (requestCode) {
+                    MainActivity.Request.EXPORT_GPX.code ->
+                        DataKit.exportToGPX(exportTargetList)
+                    MainActivity.Request.EXPORT_JSON.code ->
+                        DataKit.exportToJSON(exportTargetList)
+                    else -> return onFailed(Exception())
+                },
+                uri
+            )
+            onFinished(exportTargetList.size)
+        } catch (error: Exception) {
+            onFailed(error)
+        }
+    }
 
 }
