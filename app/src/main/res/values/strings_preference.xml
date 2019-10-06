@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="pref_title">Preference</string>
+    <!-- Screen: Main -->
+    <string name="pref_main_screen_title">Preference</string>
 
     <string name="pref_provider_category_title">Provider</string>
     <string name="pref_provider_gps_key">pref_provider_gps</string>
@@ -11,17 +12,9 @@
     <string name="pref_provider_network_summary">NETWORK_PROVIDER</string>
     <string name="pref_provider_customized_enable_key">pref_provider_customized_enable</string>
     <string name="pref_provider_customized_enable_title">Mock Customized Provider</string>
-    <string name="pref_provider_customized_manage_key">pref_provider_customized_manage</string>
-    <string name="pref_provider_customized_manage_title">Manage Customized Provider</string>
-    <string name="pref_provider_customized_list_key">pref_provider_customized_list</string>
-    <!-- Customized Provider Activity -->
-    <string name="customized_provider_title">Customized Provider</string>
-    <string name="customized_provider_class_name">labs.lucka.mlp.CustomizedProviderActivity</string>
-    <string name="menu_customized_provider_add">Add</string>
-    <string name="menu_customized_provider_save">Save</string>
-    <string name="customized_provider_add_title">Add a New Provider</string>
-    <string name="customized_provider_edit_title">Edit Provider</string>
-    <string name="customized_provider_removed">Provider removed.</string>
+    <string name="pref_provider_manager_key">pref_provider_manager_manage</string>
+    <string name="pref_provider_manager_title">Manage Customized Providers</string>
+    <string name="pref_provider_list_key">pref_provider_list</string>
 
     <string name="pref_ie_category_title">Import / Export</string>
     <string name="pref_ie_export_enabled_only_key">pref_ie_export_enabled_only</string>
@@ -38,4 +31,38 @@
     <string name="pref_edit_confirm_remove_title">Confirm to Remove</string>
     <string name="pref_edit_confirm_remove_summary_on">Confirm before removing mock target(s)</string>
     <string name="pref_edit_confirm_remove_summary_off">Remove mock target(s) directly</string>
+
+    <string name="pref_other_category_title">Other</string>
+    <string name="pref_other_about_title">About</string>
+
+    <!-- Activity: Provider Manager -->
+    <string name="provider_manager_title">Provider Manager</string>
+    <string name="menu_provider_manager_add">Add</string>
+    <string name="menu_provider_manager_save">Save</string>
+    <string name="dialog_add_provider_title">Add a New Provider</string>
+    <string name="dialog_edit_provider_title">Edit Provider</string>
+    <string name="msg_provider_removed">Provider removed.</string>
+
+    <!-- Screen: About -->
+    <string name="pref_about_screen_title">About</string>
+
+    <string name="pref_about_summary_category_title">Summary</string>
+    <string name="pref_about_summary_version_key">pref_about_summary_version</string>
+    <string name="pref_about_summary_version_summary">%1$s (Build %2$d)</string>
+    <string name="pref_about_summary_github_title">GitHub</string>
+    <string name="pref_about_summary_github_summary">Source code</string>
+    <string name="pref_about_summary_github_url">https://github.com/lucka-me/mlp-android</string>
+
+    <string name="pref_about_developer_category_title">Developer</string>
+    <string name="pref_about_developer_lucka_title">Lucka</string>
+    <string name="pref_about_developer_lucka_url">https://lucka.moe</string>
+
+    <string name="pref_about_dependency_category_title">Dependencies</string>
+    <string name="pref_about_dependency_androidx_title">AndroidX</string>
+    <string name="pref_about_dependency_androidx_url">https://developer.android.com/topic/libraries/support-library/androidx-overview</string>
+    <string name="pref_about_dependency_anko_title">Anko</string>
+    <string name="pref_about_dependency_anko_url">https://github.com/Kotlin/anko</string>
+    <string name="pref_about_dependency_gson_title">Gson</string>
+    <string name="pref_about_dependency_gson_url">https://github.com/google/gson</string>
+
 </resources>

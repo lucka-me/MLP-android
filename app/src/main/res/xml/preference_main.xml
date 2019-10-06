@@ -1,57 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<androidx.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory android:title="@string/pref_provider_category_title">
+    <PreferenceCategory
+        android:title="@string/pref_provider_category_title"
+        app:iconSpaceReserved="false" >
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="@string/pref_provider_gps_key"
             android:summary="@string/pref_provider_gps_summary"
-            android:title="@string/pref_provider_gps_title" />
+            android:title="@string/pref_provider_gps_title"
+            app:iconSpaceReserved="false" />
         <SwitchPreference
             android:defaultValue="true"
             android:key="@string/pref_provider_network_key"
             android:summary="@string/pref_provider_network_summary"
-            android:title="@string/pref_provider_network_title" />
+            android:title="@string/pref_provider_network_title"
+            app:iconSpaceReserved="false" />
         <SwitchPreference
             android:defaultValue="false"
             android:key="@string/pref_provider_customized_enable_key"
-            android:title="@string/pref_provider_customized_enable_title" />
-        <Preference android:title="@string/pref_provider_customized_manage_title">
+            android:title="@string/pref_provider_customized_enable_title"
+            app:iconSpaceReserved="false" />
+        <Preference android:title="@string/pref_provider_manager_title">
             <intent
                 android:action="android.intent.action.MAIN"
-                android:targetClass="@string/customized_provider_class_name"
+                android:targetClass="labs.lucka.mlp.ProviderManagerActivity"
                 android:targetPackage="@string/package_name" />
         </Preference>
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/pref_ie_category_title">
+    <PreferenceCategory
+        android:title="@string/pref_ie_category_title"
+        app:iconSpaceReserved="false">
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="@string/pref_ie_export_enabled_only_key"
             android:summaryOff="@string/pref_ie_export_enabled_only_summary_off"
             android:summaryOn="@string/pref_ie_export_enabled_only_summary_on"
-            android:title="@string/pref_ie_export_enabled_only_title" />
+            android:title="@string/pref_ie_export_enabled_only_title"
+            app:iconSpaceReserved="false" />
         <SwitchPreference
             android:defaultValue="false"
             android:key="@string/pref_ie_automatic_interval_key"
             android:summaryOff="@string/pref_ie_automatic_interval_summary_off"
             android:summaryOn="@string/pref_ie_automatic_interval_summary_on"
-            android:title="@string/pref_ie_automatic_interval_title" />
+            android:title="@string/pref_ie_automatic_interval_title"
+            app:iconSpaceReserved="false" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/pref_edit_category_title">
+    <PreferenceCategory
+        android:title="@string/pref_edit_category_title"
+        app:iconSpaceReserved="false">
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="@string/pref_edit_confirm_remove_key"
             android:summaryOff="@string/pref_edit_confirm_remove_summary_off"
             android:summaryOn="@string/pref_edit_confirm_remove_summary_on"
-            android:title="@string/pref_edit_confirm_remove_title" />
+            android:title="@string/pref_edit_confirm_remove_title"
+            app:iconSpaceReserved="false" />
 
     </PreferenceCategory>
 
-</PreferenceScreen>
+    <PreferenceCategory
+        android:title="@string/pref_other_category_title"
+        app:iconSpaceReserved="false" >
+
+        <Preference
+            android:title="@string/pref_other_about_title"
+            app:fragment="labs.lucka.mlp.PreferenceActivity$PreferenceFragmentAbout"
+            app:iconSpaceReserved="false" />
+
+    </PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>
