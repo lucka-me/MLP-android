@@ -6,7 +6,6 @@ import android.util.Xml
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.internal.bind.util.ISO8601Utils
-import org.jetbrains.anko.defaultSharedPreferences
 import org.xml.sax.Attributes
 import org.xml.sax.helpers.DefaultHandler
 import org.xmlpull.v1.XmlSerializer
@@ -15,26 +14,6 @@ import java.text.ParsePosition
 import java.util.*
 import javax.xml.parsers.SAXParserFactory
 
-/**
- * A class used to save and load data to / from file
- *
- * ## Nested Classes
- * - [FileType]
- * - [GPXParserHandler]
- *
- * ## Static Methods
- * - [saveData]
- * - [loadData]
- * - [readFile]
- * - [writeFile]
- * - [importFromGPX]
- * - [importFromJSON]
- * - [exportToGPX]
- * - [exportToJSON]
- *
- * @author lucka-me
- * @since 0.2
- */
 class DataKit {
 
     enum class FileType(
@@ -43,55 +22,32 @@ class DataKit {
     ) {
         JSON(
             0, R.string.ie_json, R.string.ie_json_mime,
-            MainActivity.AppRequest.IMPORT_JSON.code, MainActivity.AppRequest.EXPORT_JSON.code
+            MainActivity.Request.IMPORT_JSON.code, MainActivity.Request.EXPORT_JSON.code
         ),
         GPX(
             1, R.string.ie_gpx, R.string.ie_gpx_mime,
-            MainActivity.AppRequest.IMPORT_GPX.code, MainActivity.AppRequest.EXPORT_GPX.code
+            MainActivity.Request.IMPORT_GPX.code, MainActivity.Request.EXPORT_GPX.code
         )
     }
 
     /**
-     * ParserHandler for GPX, convert to mock target list
-     *
-     * ## Changelog
-     * ### 0.2.10
-     * - Support `time` and automatic interval
-     * - Requires context
-     * ### 0.2.11
-     * - Fixed: Read value out of targets
+     * ParserHandler for GPX, convert to [MockTarget] list
      *
      * ## Supported Element Types
      * - `wpt`, `trkpt`
      * - `ele`, `desc`, `time`
      *
-     * ## Overridden Methods
-     * - [startDocument]
-     * - [startElement]
-     * - [endElement]
-     * - [characters]
-     *
-     * @param [context] The context
+     * @param [automaticInterval] Should calculate interval or not
      *
      * @see <a href="https://www.jianshu.com/p/e99f061ce67c">Kotlin/Java解析XMl文件的四种方式 | 简书</a>
      *
      * @author lucka-me
      * @since 0.2.8
      *
-     * @property [mockTargetList] The list of mock targets
-     * @property [longitude] The longitude of target, from `lon`
-     * @property [latitude] The latitude of target, from `lat`
-     * @property [title] Title of target, from `desc`
-     * @property [altitude] Altitude of target, from `ele`
-     * @property [lastTime] Time of last target, from `time`
-     * @property [interval] Interval between two targets, calculated from [lastTime]
-     * @property [elementValue] Value read from element by [characters]
-     * @property [isInTargetElement] To avoid reading values out of `wpt` or `trkpt`
-     * @property [automaticInterval] Preference: Import / Export - Automatic Interval
      */
-    class GPXParserHandler(context: Context) : DefaultHandler() {
+    class GPXParserHandler(private val automaticInterval: Boolean) : DefaultHandler() {
 
-        var mockTargetList: ArrayList<MockTarget> = ArrayList(0)
+        val mockTargetList: ArrayList<MockTarget> = arrayListOf()
         private var longitude: Double? = null
         private var latitude: Double? = null
         private var title: String? = null
@@ -100,13 +56,10 @@ class DataKit {
         private var interval: Long? = null
         private var elementValue: String? = null
         private var isInTargetElement: Boolean = false
-        private val automaticInterval: Boolean = context.defaultSharedPreferences.getBoolean(
-            context.getString(R.string.pref_ie_automatic_interval_key), false
-        )
 
         override fun startDocument() {
             isInTargetElement = false
-            mockTargetList = ArrayList(0)
+            mockTargetList.clear()
             super.startDocument()
         }
 
@@ -202,54 +155,27 @@ class DataKit {
         private const val E_GPX = "gpx"
         private const val E_METADATA = "metadata"
 
-        /**
-         * Save data to JSON file.
-         *
-         * @param [context] The context
-         * @param [mockTargetList] Mock target list to save
-         *
-         * @throws [Exception] Whatever exception occurred during the process
-         *
-         * @author lucka-me
-         * @since 0.2
-         */
         fun saveData(context: Context, mockTargetList: ArrayList<MockTarget>) {
             val filename = context.getString(R.string.data_filename)
             val file = File(context.filesDir, filename)
 
-            try {
-                file.writeText(Gson().toJson(mockTargetList.toArray()))
-            } catch (error: Exception) {
-                throw error
-            }
+            file.writeText(Gson().toJson(mockTargetList.toArray()))
         }
 
-        /**
-         * Load data from JSON file.
-         *
-         * @param [context] The context
-         *
-         * @return Mock target list loaded from file
-         *
-         * @throws [Exception] Whatever exception occurred during the process
-         *
-         * @author lucka-me
-         * @since 0.2
-         */
         fun loadData(context: Context): ArrayList<MockTarget> {
-            val filename = context.getString(R.string.data_filename)
-            val file = File(context.filesDir, filename)
-            var mockTargetArray: Array<MockTarget> = arrayOf()
+            val file = File(context.filesDir, context.getString(R.string.data_filename))
+            var list = arrayListOf<MockTarget>()
 
             if (file.exists()) {
                 try {
-                    mockTargetArray = Gson().fromJson(file.readText(), Array<MockTarget>::class.java)
+                    list = Gson().fromJson(file.readText(), Array<MockTarget>::class.java)
+                        .toCollection(ArrayList())
                 } catch (error: Exception) {
-                    throw error
+                    return list
                 }
             }
 
-            return mockTargetArray.toCollection(ArrayList())
+            return list
         }
 
         fun writeFile(context: Context, content: String, uri: Uri?) {
@@ -265,7 +191,7 @@ class DataKit {
         fun readFile(context: Context, uri: Uri?): String {
             var result = ""
             if (uri == null) return  result
-            val inputStream = context.contentResolver.openInputStream(uri)
+            val inputStream = context.contentResolver.openInputStream(uri) ?: return result
             val bufferedReader = BufferedReader(InputStreamReader(inputStream))
             var line: String? = bufferedReader.readLine()
             while (line != null) {
@@ -275,67 +201,40 @@ class DataKit {
             return result
         }
 
-        /**
-         * Convert JSON string to mock target array.
-         *
-         * @param [source] The JSON string to be converted
-         *
-         * @return Array of MockTarget converted from the source
-         *
-         * @author lucka-me
-         * @since 0.2.4
-         */
-        fun importFromJSON(source: String): Array<MockTarget> {
-            return Gson().fromJson(source, Array<MockTarget>::class.java)
+        fun importFromJSON(source: String): ArrayList<MockTarget> {
+            var list = arrayListOf<MockTarget>()
+
+            try {
+                list = Gson().fromJson(source, Array<MockTarget>::class.java)
+                    .toCollection(ArrayList())
+            } catch (error: Exception) {
+                return list
+            }
+
+            return list
         }
 
-        /**
-         * Convert mock target ArrayList to JSON string.
-         *
-         * ## Changelog
-         * ### 0.2.8
-         * - Export pretty printing JSON
-         *
-         * @param [mockTargetList] The mock target ArrayList to be converted
-         *
-         * @return JSON string converted from [mockTargetList]
-         *
-         * @author lucka-me
-         * @since 0.2.4
-         */
         fun exportToJSON(mockTargetList: ArrayList<MockTarget>): String {
             return GsonBuilder().setPrettyPrinting().create().toJson(mockTargetList.toArray())
         }
 
-        /**
-         * Convert GPX string to mock target array.
-         *
-         * ## Changelog
-         * ### 0.2.8
-         * - Finished, parse with SAX
-         *
-         * @param [source] The GPX string to be converted
-         *
-         * @return Array of MockTarget converted from the source
-         *
-         * @author lucka-me
-         * @since 0.2.4
-         */
-        fun importFromGPX(context: Context, source: String): Array<MockTarget> {
-            val saxParser = SAXParserFactory.newInstance().newSAXParser()
-            val gpxParserHandler = GPXParserHandler(context)
-            saxParser.parse(source.byteInputStream(), gpxParserHandler)
-            return gpxParserHandler.mockTargetList.toTypedArray()
+        fun importFromGPX(source: String, automaticInterval: Boolean): ArrayList<MockTarget> {
+            var list = arrayListOf<MockTarget>()
+
+            try {
+                val saxParser = SAXParserFactory.newInstance().newSAXParser()
+                val gpxParserHandler = GPXParserHandler(automaticInterval)
+                saxParser.parse(source.byteInputStream(), gpxParserHandler)
+                list = gpxParserHandler.mockTargetList
+            } catch (error: Exception) {
+                return list
+            }
+
+            return list
         }
 
         /**
          * Convert mock target ArrayList to GPX string.
-         *
-         * ## Changelog
-         * ### 0.2.12
-         * - Finish method
-         * ### 0.2.15
-         * - Code optimized
          *
          * @param [mockTargetList] The mock target ArrayList to be converted
          *
