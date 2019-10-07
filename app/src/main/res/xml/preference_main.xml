@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.preference.PreferenceScreen
+<PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -24,7 +24,9 @@
             android:key="@string/pref_provider_customized_enable_key"
             android:title="@string/pref_provider_customized_enable_title"
             app:iconSpaceReserved="false" />
-        <Preference android:title="@string/pref_provider_manager_title">
+        <Preference
+            android:title="@string/pref_provider_manager_title"
+            app:iconSpaceReserved="false" >
             <intent
                 android:action="android.intent.action.MAIN"
                 android:targetClass="labs.lucka.mlp.ProviderManagerActivity"
@@ -79,4 +81,4 @@
 
     </PreferenceCategory>
 
-</androidx.preference.PreferenceScreen>
+</PreferenceScreen>
